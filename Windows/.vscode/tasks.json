@@ -16,7 +16,8 @@
                 "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
                 "-DCMAKE_CXX_COMPILER=C:/MinGW/bin/g++.exe",
                 "-DCMAKE_BUILD_TYPE=Debug",
-                "-DCMAKE_CXX_FLAGS_DEBUG=-g"
+                "-DCMAKE_CXX_FLAGS_DEBUG=-g",
+                "-DOPENSSL_ROOT_DIR=C:/msys64/mingw64"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
