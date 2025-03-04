@@ -6,18 +6,25 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "-S", ".", 
-                "-B", "build", 
-                "-G", "MinGW Makefiles", 
+                "-S",
+                ".",
+                "-B",
+                "build",
+                "-G",
+                "Ninja",
+                "MinGW Makefiles",
                 "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-                "-DCMAKE_CXX_COMPILER=C:/MinGW/bin/g++.exe" ,
-                "-DCMAKE_BUILD_TYPE=Debug" , // 添加 Debug 模式
+                "-DCMAKE_CXX_COMPILER=C:/MinGW/bin/g++.exe",
+                "-DCMAKE_BUILD_TYPE=Debug",
                 "-DCMAKE_CXX_FLAGS_DEBUG=-g"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
             "problemMatcher": []
         },
         {
@@ -25,27 +32,70 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                    "--build",
-                        "build",
-                        "-j8"  // 并行使用 4 个线程
+                "--build",
+                "build"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": ["$gcc"]
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
         },
         {
             "label": "generate-launch",
             "type": "shell",
             "command": "node",
-            "args": ["${workspaceFolder}/.vscode/generate_launch.js"],
-            "group": {"kind": "build"},
+            "args": [
+                "${workspaceFolder}/.vscode/generate_launch.js"
+            ],
+            "group": {
+                "kind": "build"
+            },
             "dependsOn": "cmake-build",
             "problemMatcher": []
+        },
+        {
+            "label": "cmake-clean",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--target",
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe 生成活动文件",
+            "command": "C:\\MinGW\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "调试器生成的任务。"
         }
     ]
 }

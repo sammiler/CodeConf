@@ -16,6 +16,12 @@ const baseConfig = {
         { description: "Set charset to UTF-8", text: "set charset UTF-8", ignoreFailures: true } ,
         { description: "将反汇编风格设置为 Intel", text: "-gdb-set disassembly-flavor intel",ignoreFailures: true}
     ],
+    environment: [
+    {
+        name: "PATH",
+        value: "${env:PATH};C:/Program Files/MySQL/MySQL Server 8.0/lib;"
+    }
+    ],
     preLaunchTask: "cmake-build"
 };
 
@@ -29,7 +35,6 @@ const configurations = executables.map(exe => ({
     program: `\${workspaceFolder}/build/bin/${exe}`,
     ...baseConfig
 }));
-console.log(`Generated configurations: ${JSON.stringify(configurations, null, 2)}`);
 const vscodeDir = path.join(__dirname, '..');
 const launchJsonPath = path.join(vscodeDir, '/.vscode/launch.json');
 fs.mkdirSync(vscodeDir, { recursive: true });

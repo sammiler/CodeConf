@@ -2,11 +2,15 @@
     "configurations": [
         {
             "name": "Win32",
+            "defines": [
+                "ENABLE_MYSQL"
+            ],
             "includePath": [
                 "${workspaceFolder}/src" ,
                  "C:\\MinGW\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include" ,      
                 "C:\\MinGW\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++"  ,
-                "C:\\MinGW\\include"
+                "C:\\MinGW\\include",
+                "C:\\Program Files\\MySQL\\MySQL Server 8.0\\include"
             ],
             "compilerPath": "C:\\MinGW\\bin\\g++.exe",
             "intelliSenseMode": "gcc-x64",
