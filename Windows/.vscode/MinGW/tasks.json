@@ -32,10 +32,10 @@
         {
             "label": "cmake-build",
             "type": "shell",
-            "command": "cmake",
+            "command": "ninja",
             "args": [
-                "--build",
-                "build"
+				"-C",
+                "build",
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -61,11 +61,11 @@
         {
             "label": "cmake-clean",
             "type": "shell",
-            "command": "cmake",
+            "command": "ninja",
             "args": [
-                "--build",
+                "-C",
                 "build",
-                "--target",
+                "-t",
                 "clean"
             ],
             "options": {
