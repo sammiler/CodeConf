@@ -1,0 +1,80 @@
+{
+    "env": {
+        "POCO_BASE": "${workspaceFolder}",
+        "pocoIncludePath": [
+            "${POCO_BASE}/CppUnit/include",
+            "${POCO_BASE}/Foundation/include",
+            "${POCO_BASE}/Encodings/include",
+            "${POCO_BASE}/XML/include",
+            "${POCO_BASE}/JSON/include",
+            "${POCO_BASE}/Util/include",
+            "${POCO_BASE}/Net/include",
+            "${POCO_BASE}/Crypto/include",
+            "${POCO_BASE}/NetSSL_OpenSSL/include",
+            "${POCO_BASE}/Data/include",
+            "${POCO_BASE}/Data/SQLite/include",
+            "${POCO_BASE}/Data/ODBC/include",
+            "${POCO_BASE}/Data/MySQL/include",
+            "${POCO_BASE}/Data/PostgreSQL/include",
+            "${POCO_BASE}/ActiveRecord/include",
+            "${POCO_BASE}/Zip/include",
+            "${POCO_BASE}/CppParser/include",
+            "${POCO_BASE}/JWT/include",
+            "${POCO_BASE}/Redis/include",
+            "${POCO_BASE}/MongoDB/include",
+            "${POCO_BASE}/ApacheConnector/include",
+            "${POCO_BASE}/Data/src",
+            "${POCO_BASE}/Data/DataTest/include",
+            "${POCO_BASE}/Trace/include"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/CppUnit/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Foundation/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Encodings/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/XML/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/JSON/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Util/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Net/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Crypto/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/NetSSL_OpenSSL/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Data/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Data/SQLite/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Data/ODBC/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Data/MySQL/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Data/PostgreSQL/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/ActiveRecord/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Zip/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/CppParser/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/JWT/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Redis/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/MongoDB/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/ApacheConnector/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Data/src",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Data/DataTest/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/Trace/include",
+                "C:/vcpkg/installed/x64-windows/include",
+                "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/**"
+            ],
+            "compileCommands": [
+                "${workspaceFolder}/tempbuild/compile_commands.json"
+            ],
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64/cl.exe",
+            "cppStandard": "c++17",
+            "cStandard": "c11",
+            "browse": {
+                "path": [
+                    "c:/Users/sammiler/MyFile/QtStudy/VSCode/poco/**",
+                    "C:/vcpkg/installed/x64-windows/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "mergeConfigurations": false
+        }
+    ],
+    "version": 4
+}
