@@ -94,7 +94,7 @@
             "type": "shell",
             "command": "node",
             "args": [
-                ".vscode/add_to_cmake.js"
+                ".vscode/node-script/add_to_cmake.js"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -111,7 +111,7 @@
             "type": "shell",
             "command": "node",
             "args": [
-                "${workspaceFolder}/.vscode/generate_launch.js"
+                "${workspaceFolder}/.vscode/node-script/generate_launch.js"
             ],
             "group": {
                 "kind": "build"
