@@ -11,7 +11,7 @@ link_directories($ENV{LIB})
 `;
 
 // 指定 CMakeLists.txt 文件路径（假设在当前目录）
-const cmakeFilePath = path.join(__dirname, "..",'CMakeLists.txt');
+const cmakeFilePath = path.join(__dirname, "../../",'CMakeLists.txt');
 
 // 读取文件内容
 fs.readFile(cmakeFilePath, 'utf8', (err, data) => {
@@ -30,13 +30,7 @@ fs.readFile(cmakeFilePath, 'utf8', (err, data) => {
         return;
     }
 
-    // 检查是否已存在相同的配置，避免重复添加
-    const includeExists = lines.some(line => line.includes('include_directories($ENV{INCLUDE}'));
-    const linkExists = lines.some(line => line.includes('link_directories($ENV{LIB}'));
-    if (includeExists && linkExists) {
-        console.log('CMakeLists.txt 已包含所需配置，无需修改');
-        return;
-    }
+
 
     // 在 project(Poco) 下一行插入内容
     lines.splice(projectIndex + 1, 0, contentToAdd.trim());

@@ -1,0 +1,37 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "defines": [],
+            "includePath": [
+                "${workspaceFolder}/src/commands",
+                "${workspaceFolder}/src/controllers",
+                "${workspaceFolder}/src/dialogs",
+                "${workspaceFolder}/src/docks",
+                "${workspaceFolder}/src/jobs",
+                "${workspaceFolder}/src/models",
+                "${workspaceFolder}/src/qml",
+                "${workspaceFolder}/src/qmltypes",
+                "${workspaceFolder}/src/resources",
+                "${workspaceFolder}/src/widgets",
+                "${workspaceFolder}/src/spatialmedia",
+                "C:\\msys64\\mingw64\\include\\mlt-7\\mlt++",
+                "C:\\msys64\\mingw64\\include\\mlt-7",
+                "C:\\msys64\\mingw64\\include",
+                "C:/msys64/mingw64/include/qt6/QtGui",
+                "C:/msys64/mingw64/include/qt6/QtCore/**",
+                "C:/msys64/mingw64/include/qt6/**",
+                "${workspaceFolder}/CuteLogger/include",
+                "${workspaceFolder}/drmingw/include",
+                "${workspaceFolder}/src",
+                "C:\\msys64\\mingw64\\share\\qt6\\mkspecs\\win32-g++\\",
+                "${workspaceFolder}/build/src/shotcut_autogen/include"
+            ],
+            "compilerPath": "C:\\msys64\\mingw64\\bin\\g++.exe",
+            "intelliSenseMode": "gcc-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

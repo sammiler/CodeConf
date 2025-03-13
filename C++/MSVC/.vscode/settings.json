@@ -1,0 +1,27 @@
+{
+    "files.associations": {
+      "*.qrc": "xml",
+      "**/TSResource/**/*.ts": "xml",
+      "*.ui": "xml"
+    },
+    "cmake.configureArgs": [
+        "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "-DVCPKG_TARGET_TRIPLET=x64-windows"
+    ],
+  "editor.snippetSuggestions": "inline",
+  "editor.tabCompletion": "on",
+    "search.exclude": {
+    "**/build": true,
+    },
+        "openInExternalApp.openMapper": [
+          {
+            "extensionName": "ui",
+            "apps": [
+              {
+                "title": "QtUI",
+                "openCommand": "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/bin/designer.exe"
+              }
+            ]
+          }
+        ]
+}

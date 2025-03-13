@@ -1,0 +1,32 @@
+{
+  "run": true,
+  "ignore": [
+    "h",
+    "cpp",
+    "c",
+    "hpp",
+    "mm",
+    "qml",
+    "js",
+    "ui",
+    "json",
+    "sh",
+    "webp",
+    "txt",
+    "qrc"
+  ],
+  "ignoreName":
+  [
+    "qmldir"
+  ],
+  "resources": [
+    {
+      "path": "src",
+      "prefix": "/"
+    },
+    {
+      "path": "icons",
+      "prefix": "/icons"
+    }
+  ]
+}

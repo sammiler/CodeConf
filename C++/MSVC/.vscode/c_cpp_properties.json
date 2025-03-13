@@ -1,0 +1,45 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/Source/",
+                "C:/vcpkg/installed/x64-windows/include",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtCore",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtGui",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtWidgets",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtXml",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtXmlPatterns",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtNetwork",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtSql",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtSvg",
+                "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/include/QtMultimediaWidgets"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "QT_BUILD_CORE_LIB",
+                "QT_BUILD_GUI_LIB",
+                "QT_BUILD_QML_LIB",
+                "QT_BUILD_QUICK_LIB"
+            ],
+            "compileCommands": [
+                "${workspaceFolder}/build/compile_commands.json"
+            ],
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64/cl.exe",
+            "cppStandard": "c++11",
+            "cStandard": "c11",
+            "browse": {
+                "path": [
+                    "C:/vcpkg/installed/x64-windows/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "mergeConfigurations": false
+        }
+    ],
+    "version": 4
+}
