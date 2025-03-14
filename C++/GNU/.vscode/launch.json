@@ -2,9 +2,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug WBOARD",
-            "program": "${workspaceFolder}/build/bin/WBOARD.exe",
-            "type": "cppvsdbg",
+            "name": "Debug drmingw",
+            "program": "${workspaceFolder}/build/bin/drmingw.exe",
+            "type": "cppdbg",
             "request": "launch",
             "args": [],
             "stopAtEntry": true,
@@ -12,22 +12,12 @@
             "environment": [
                 {
                     "name": "PATH",
-                    "value": "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/bin;${workspaceFolder}/ThirdParty/quazip/Debug/bin;${workspaceFolder}/ThirdParty/openssl/bin;"
-                },
-                {
-                    "name": "QT_PLUGIN_PATH",
-                    "value": "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/plugins"
-                },
-                {
-                    "name": "QML_PATH",
-                    "value": "C:/vcpkg/installed/x64-windows/debug/bin"
-                },
-                {
-                    "name": "QML2_IMPORT_PATH",
-                    "value": "C:/vcpkg/installed/x64-windows/debug/Qt6/qml"
+                    "value": "${env:PATH};C:/Program Files/MySQL/MySQL Server 8.0/lib;"
                 }
             ],
-            "console": "integratedTerminal",
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -45,10 +35,45 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "cmake-build",
+            "preLaunchTask": "cmake-build"
+        },
+        {
+            "name": "Debug shotcut",
+            "program": "${workspaceFolder}/build/bin/shotcut.exe",
+            "type": "cppdbg",
+            "request": "launch",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}/build/bin",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${env:PATH};"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/msys64/mingw64/bin/gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set charset to UTF-8",
+                    "text": "set charset UTF-8",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "将反汇编风格设置为 Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "cmake-build" ,
             "sourceFileMap": {
-                "C:/vcpkg/installed/x64-windows/debug": "C:/vcpkg/buildtrees/qtbase/src/here-src-6-c23658a936.clean/src",
-                "C:/vcpkg/installed/x64-windows": "C:/vcpkg/buildtrees/qtbase/src/here-src-6-c23658a936.clean/src"
+                "C:/M/B/src/qtbase-everywhere-src-6.8.2/src": "C:/Qt/Sources/Qt6.8.2/qtbase/src"
             }
         }
     ]

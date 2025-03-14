@@ -12,8 +12,8 @@
                 "build",
                 "-G",
                 "Ninja",
-                "-DCMAKE_C_COMPILER=C:\\msys64\\mingw64\\bin\\gcc.exe",
-                "-DCMAKE_CXX_COMPILER=C:\\msys64\\mingw64\\bin\\g++.exe",
+                "-DCMAKE_C_COMPILER=C:/msys64/mingw64/bin/gcc.exe",
+                "-DCMAKE_CXX_COMPILER=C:/msys64/mingw64/bin/g++.exe",
                 "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
                 "-DCMAKE_BUILD_TYPE=Debug",
 				"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${workspaceFolder}/build/bin",
@@ -29,7 +29,7 @@
             },
             // "dependsOn": "Generate Qt Resources",
             "problemMatcher": [
-                "$msCompile"
+                "$gcc"
             ],
             "detail": "1.Cmake configure used Ninja to build project"
         },
@@ -50,7 +50,7 @@
             },
             "dependsOn": "cmake-configure",
             "problemMatcher": [
-                "$msCompile"
+                "$gcc"
             ],
             "detail": "3.Build the project by Ninja"
         },
@@ -72,7 +72,7 @@
                 "isDefault": false
             },
             "problemMatcher": [
-                "$msCompile"
+                "$gcc"
             ],
             "detail": "5.Use ninja to clean the project"
         },
