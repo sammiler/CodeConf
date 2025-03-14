@@ -3,7 +3,7 @@
     "configurations": [
         {
             "name": "Debug WBOARD",
-            "program": "${workspaceFolder}/build/bin/WBOARD.exe",
+            "program": "${workspaceFolder}/build/bin/Debug/WBOARD.exe",
             "type": "cppvsdbg",
             "request": "launch",
             "args": [],
@@ -45,7 +45,6 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "cmake-build",
             "sourceFileMap": {
                 "C:/vcpkg/installed/x64-windows/debug": "C:/vcpkg/buildtrees/qtbase/src/here-src-6-c23658a936.clean/src",
                 "C:/vcpkg/installed/x64-windows": "C:/vcpkg/buildtrees/qtbase/src/here-src-6-c23658a936.clean/src"

@@ -11,20 +11,13 @@
                 "-B",
                 "build",
                 "-G",
-                // "Visual Studio 17 2022", // 指定 MSVC 的生成器（根据你的 VS 版本调整）
-                // "-A",
-                // "x64",                   // 指定目标架构（如 x64）
-                "Ninja",
-                "-DCMAKE_C_COMPILER=C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
-                "-DCMAKE_CXX_COMPILER=C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
-                "-DCMAKE_LINKER=C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/link.exe",
-                "-DCMAKE_RC_COMPILER=C:/\"Program Files (x86)\"/Windows Kits/10/bin/10.0.22621.0/x64/rc.exe",
-                "-DCMAKE_MT=C:/\"Program Files (x86)\"/Windows Kits/10/bin/10.0.22621.0/x64/mt.exe",
-                "-DCMAKE_MC_COMPILER=C:/\"Program Files (x86)\"/Windows Kits/10/bin/10.0.22621.0/x64/mc.exe",
+                "Visual Studio 17 2022", // 指定 MSVC 的生成器（根据你的 VS 版本调整）
+                "-A",
+                "x64",                   // 指定目标架构（如 x64）
                 "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
                 "-DCMAKE_BUILD_TYPE=Debug",
-                "-DCMAKE_CXX_FLAGS=/EHsc /W3 /MP /Zi /FS /showIncludes /MDd /D_ITERATOR_DEBUG_LEVEL=2", // Add /MDd here too
-                "-DCMAKE_C_FLAGS=/EHsc /W3 /MP /Zi /FS /showIncludes /MDd /D_ITERATOR_DEBUG_LEVEL=2",   // Add for consistency
+                "-DCMAKE_CXX_FLAGS=/EHsc /W3 /MP6 /Zi /FS  /MDd /D_ITERATOR_DEBUG_LEVEL=2", // Add /MDd here too
+                "-DCMAKE_C_FLAGS=/EHsc /W3 /MP6 /Zi /FS  /MDd /D_ITERATOR_DEBUG_LEVEL=2",   // Add for consistency
 				"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${workspaceFolder}/build/bin",
 				"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${workspaceFolder}/build/lib",
 				"-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${workspaceFolder}/build/lib",
@@ -33,9 +26,7 @@
             "options": {
                 "cwd": "${workspaceFolder}",
                 "env": {
-                    "PATH": "C:/Tools;C:/Program Files/CMake/bin;C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/bin;C:/vcpkg/installed/x64-windows/bin",
-                    "INCLUDE": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.16.27023/include;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/ucrt;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/um;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/shared;",
-                    "LIB": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.16.27023/lib/x64;C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/ucrt/x64;C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/um/x64;"
+                    "PATH": "C:/Program Files/CMake/bin;C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/bin;C:/Windows/System32/WindowsPowerShell/v1.0/;",
                 }
             },
             "group": {
@@ -46,23 +37,21 @@
             "problemMatcher": [
                 "$msCompile"
             ],
-            "detail": "1.Cmake configure used Ninja to build project"
+            "detail": "Cmake configure  build project"
         },
         {
             "label": "cmake-build",
             "type": "shell",
-            "command": "ninja",
+            "command": "cmake",
             "args": [
-				"-C",
-                "build",
+                    "--build",
+                    "build",               // 构建目录 
             ],
             "options": {
                 
                 "cwd": "${workspaceFolder}",
                 "env": {
-                    "PATH": "C:/Tools;C:/Program Files/CMake/bin;C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/bin;C:/Windows/System32/WindowsPowerShell/v1.0/;C:/vcpkg/installed/x64-windows/bin",
-                    "INCLUDE": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.16.27023/include;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/ucrt;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/um;C:/Program Files (x86)/Windows Kits/10/Include/10.0.22621.0/shared;",
-                    "LIB": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.16.27023/lib/x64;C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/ucrt/x64;C:/Program Files (x86)/Windows Kits/10/Lib/10.0.22621.0/um/x64;",
+                    "PATH": "C:/Program Files/CMake/bin;C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/bin;C:/Windows/System32/WindowsPowerShell/v1.0/;",
                 }
             },
             "group": {
@@ -73,17 +62,17 @@
             "problemMatcher": [
                 "$msCompile"
             ],
-            "detail": "3.Build the project by Ninja"
+            "detail": "Build the project by cmake"
         },
         {
             "label": "cmake-clean",
             "type": "shell",
-            "command": "ninja",
+            "command": "cmake",
             "args": [
-                "-C",
-                "build",
-                "-t",
-                "clean"
+                    "--build",
+                    "build",           // 构建目录
+                    "--target",
+                    "clean",           // MSBuild 的 clean 目标
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -95,7 +84,7 @@
             "problemMatcher": [
                 "$msCompile"
             ],
-            "detail": "5.Use ninja to clean the project"
+            "detail": "Use cmake to clean the project"
         },
         {
             "label": "add-env-to-cmakelists",
@@ -112,7 +101,7 @@
                 "isDefault": false
             },
             "problemMatcher": [],
-            "detail": "2.Add include_directories and link_directories to CMakeLists.txt"
+            "detail": "Add include_directories and link_directories to CMakeLists.txt"
         },
         {
             "label": "generate-launch",
@@ -126,7 +115,7 @@
             },
             "dependsOn": "cmake-build",
             "problemMatcher": [],
-            "detail": "4.Generate launch.json for users to debug,especially for tests exe."
+            "detail": "Generate launch.json for users to debug,especially for tests exe."
         },
         {
             "label": "Generate Qt Resources",
@@ -140,7 +129,17 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "0.Generate Qt's resource compiler"
+            "detail": "Generate Qt's resource compiler"
+        },
+        {
+            "label": "Copy DLLs",
+            "type": "shell",
+            "command": "node ${workspaceFolder}/.vscode/node-script/copy-dll.js",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
         }
     ]
 }
