@@ -1,4 +1,3 @@
-VSCode 配置文件项目
 项目简介
 欢迎使用 VSCode 配置文件项目！这是一个专为 Visual Studio Code（简称 VSCode）设计的开源项目，旨在通过提供精心设计的配置文件，帮助开发者快速搭建高效的开发环境。当前版本主要提供全局配置（如 settings.json 和 keybindings.json），并计划在未来扩展支持多种编程语言的个性化配置（如 JavaScript、Python、Java 等）。
 
@@ -42,7 +41,7 @@ git clone https://github.com/your-username/vscode-config.git
 或者从 GitHub 下载 ZIP 文件并解压。
 
 2. 安装 SyncFiles 插件
-从 GitHub 下载 SyncFiles（假设地址为 https://github.com/sammiler/vscode-syncfiles）。
+从 GitHub 下载 SyncFiles（假设地址为 https://github.com/username/vscode-syncfiles）。
 在 VSCode 中，打开扩展视图（Ctrl+Shift+X 或 Cmd+Shift+X），选择“从 VSIX 安装”，然后选择下载的 .vsix 文件安装。
 3. 配置本地文件
 将项目中的 settings.json、keybindings.json 等文件复制到 VSCode 用户配置文件夹：
