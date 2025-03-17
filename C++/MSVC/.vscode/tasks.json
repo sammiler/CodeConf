@@ -21,6 +21,7 @@
 				"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${workspaceFolder}/build/bin",
 				"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${workspaceFolder}/build/lib",
 				"-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${workspaceFolder}/build/lib",
+                "-DCMAKE_INSTALL_PREFIX=${workspaceFolder}/install_dir"
                 
             ],
             "options": {
@@ -63,6 +64,22 @@
                 "$msCompile"
             ],
             "detail": "Build the project by cmake"
+        },{
+            "label": "cmake-install",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--target",
+                "install"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "dependsOn": "cmake-configure-install-prefix",
+            "detail": "Use cmake to install the project"
         },
         {
             "label": "cmake-clean",
