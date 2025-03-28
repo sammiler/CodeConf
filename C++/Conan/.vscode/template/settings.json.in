@@ -1,0 +1,37 @@
+{
+    "files.associations": {
+        "*.qrc": "xml",
+        "**/APP/ts/**/*.ts": "xml",
+        "*.ui": "xml"
+    },
+    "terminal.integrated.defaultProfile.${os}": "${bash}",
+    "cmake.buildDirectory": "${workspaceFolder}/conan_debug/build/Debug",
+    "cmake.configureEnvironment": {
+        "PATH": "${conan_path};%PATH%"
+    },
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build"
+    ],
+    "cmake.environment": {
+        "LIB": "${cmake_lib}",
+        "INCLUDE": "${cmake_include}"
+    },
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "cmake.buildEnvironment": {
+        "PATH": "${conan_path};%PATH%"
+    },
+    "editor.snippetSuggestions": "inline",
+    "editor.tabCompletion": "on",
+    "openInExternalApp.openMapper": [
+        {
+            "extensionName": "ui",
+            "apps": [
+                {
+                    "title": "QtUI",
+                    "openCommand": "${qt_exe}"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [],
+            "defines": [
+                "_DEBUG"
+            ],
+            "intelliSenseMode": "windows-msvc-x64",
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64/cl.exe",
+            "cppStandard": "c++17",
+            "cStandard": "c11",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "mergeConfigurations": false
+        }
+    ],
+    "version": 4
+}

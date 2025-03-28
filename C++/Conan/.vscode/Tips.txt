@@ -1,0 +1,85 @@
+[settings]    llvm配置
+os=Windows
+arch=x86_64
+compiler=clang
+compiler.version=19
+compiler.runtime=static
+compiler.cppstd=17
+compiler.libcxx=libstdc++
+compiler.runtime_version=v144
+build_type=Release
+
+[buildenv]
+PATH=+(path)C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/Llvm/x64/bin/
+PATH=+(path)C:/Tools
+
+
+[conf]
+tools.cmake.cmaketoolchain:generator=Ninja
+tools.cmake.cmaketoolchain:user_toolchain=["C:/Users/sammiler/.conan2/profiles/my_toolchain.cmake"]
+tools.build:cxxflags=["/arch:AVX"]
+tools.build:compiler_executables = {"c": "clang-cl.exe", "cpp": "clang-cl.exe", "rc": "llvm-rc.exe", "ar": "llvm-ar.exe", "ld": "lld-link.exe"}
+tools.build:defines=["WEBP_DLL"]
+tools.microsoft.bash:active=False    
+
+
+
+
+[settings]   msvc配置
+os=Windows
+arch=x86_64
+compiler=msvc
+compiler.version=194
+compiler.cppstd=17
+compiler.runtime=dynamic
+build_type=Release
+
+[buildenv]
+PATH=+(path)C:/Tools
+
+
+
+[conf]
+tools.cmake.cmaketoolchain:generator=Ninja
+tools.cmake.cmaketoolchain:find_package_prefer_config=True
+
+
+
+
+
+conan remove "*" -c                      删除所有库
+conan install . -of=conan_debug --build=missing -s build_type=Debug -s arch=x86_64 -s compiler=msvc -s compiler.version=194 -vdebug 安装命令
+conan graph info --format=html > graph.html .                  导出html
+conan remove  "libpq/*"     删除
+conan search  "libpq/*"     搜索远程
+conan create . -s build_type=Release -s arch=x86_64 -s compiler=msvc -s compiler.version=194 自己打包
+conan cache path portaudio/19.8.0   搜索本地缓存
+conan remote enable conancenter  开启
+conan remote disable conancenter 禁用
+conan export . --name libde265 --version 1.0.12 打包
+conan list "libde265*"  搜索
+clang-cl.exe /c "libmp3lame/bitstream.c" -o "libmp3lame/bitstream.obj"
+sudo ln -s /mnt/c /c
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

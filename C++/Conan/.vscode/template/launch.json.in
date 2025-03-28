@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Debug ${exe_name}",
+            "program": "${exe_path}",
+            "type": "${debug_type}",
+            "request": "launch",
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}/build/bin",
+            "environment": [
+                {
+                    "name": "PATH",
+                    "value": "${conan_path};${env:PATH};"
+                },
+                {
+                    "name": "QT_PLUGIN_PATH",
+                    "value": "${qt_plugins}"
+                },
+                {
+                    "name": "QML_PATH",
+                    "value": "${qml_path}"
+                },
+                {
+                    "name": "QML2_IMPORT_PATH",
+                    "value": "${qml2_path}"
+                }
+            ],
+            "console": "internalConsole", 
+            "logging": {
+                "moduleLoad": true, 
+                "exceptions": true 
+            },
+            "visualizerFile": "${qt5_natvis}",
+            "preLaunchTask": "cmake-build",
+            "sourceFileMap": {
+
+            }
+        }
+    ]
+}
