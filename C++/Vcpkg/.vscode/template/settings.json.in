@@ -1,0 +1,33 @@
+{
+    "files.associations": {
+        "*.qrc": "xml",
+        "**/APP/ts/**/*.ts": "xml",
+        "*.ui": "xml"
+    },
+    "terminal.integrated.defaultProfile.${os}": "${bash}",
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build"
+    ],
+    "clangd.fallbackFlags": [
+    "-I${workspaceFolder}/ext/core/include",
+    "-I${vcpkginclude}"
+    ],
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "cmake.buildEnvironment": {
+        "PATH": "%PATH%"
+    },
+    "editor.snippetSuggestions": "inline",
+    "editor.tabCompletion": "on",
+    "openInExternalApp.openMapper": [
+        {
+            "extensionName": "ui",
+            "apps": [
+                {
+                    "title": "QtUI",
+                    "openCommand": "${qt_exe}"
+                }
+            ]
+        }
+    ]
+}
