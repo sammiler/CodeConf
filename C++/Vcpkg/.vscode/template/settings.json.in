@@ -7,7 +7,11 @@
     "terminal.integrated.defaultProfile.${os}": "${bash}",
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.arguments": [
-        "--compile-commands-dir=${workspaceFolder}/build"
+        "--compile-commands-dir=${workspaceFolder}/build",
+        "--clang-tidy",               
+        "--all-scopes-completion",      
+        "--completion-style=detailed",  
+        "--header-insertion=iwyu"
     ],
     "clangd.fallbackFlags": [
     "-I${workspaceFolder}/ext/core/include",
