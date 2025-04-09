@@ -29,25 +29,7 @@ class BaseGenerator:
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
         print(f"已生成: {output_path}")
-
 class SettingsGenerator(BaseGenerator):
-    def get_conan_path(self):
-        if self.system == "Windows":
-            conan_file_name = "conanrunenv-debug-x86_64.bat"
-        else:
-            conan_file_name = "conanrunenv-debug-x86_64.sh"
-        conan_file = self.root_dir / "conan_debug" / "build" / "Debug" / "generators" / conan_file_name
-        try:
-            with open(conan_file, 'r', encoding='utf-8') as f:
-                for line in f:
-                    if line.startswith('set "PATH=') or line.startswith('export PATH='):
-                        path = re.search(r'(?:set "PATH=|export PATH=)(.+?)(?:;%PATH%"|:$PATH)', line).group(1)
-                        return path.replace("\\", "/")
-        except FileNotFoundError:
-            print(f"警告: 未找到 {conan_file}，conan_path 将为空")
-            return ""
-        return ""
-
     def replace_placeholders(self, template, replacements):
         result = template
         for key, value in replacements.items():
@@ -58,14 +40,28 @@ class SettingsGenerator(BaseGenerator):
 
     def generate(self):
         config = self.load_json("template.json")["settings"]
-        platformdata = self.load_json("template.json")["platform"]
+        platform_data = self.load_json("template.json")["platform"]
         template = self.load_template("settings.json.in")
-        replacements = config["os"].get(self.current_os, {})
+        
+        # 从 template.json 中获取当前操作系统的配置
+        os_config = config["os"].get(self.current_os, {})
         dynamic = config.get("dynamic", [])
-        if "conan_path" in dynamic:
-            replacements["conan_path"] = self.get_conan_path()
-        if "vcpkginclude" in dynamic:
-            replacements["vcpkginclude"] = platformdata["toolchain"] + "/installed/" + platformdata["triplet"] + "/include"
+
+        # 准备替换字典
+        replacements = {
+            "bash": os_config.get("bash", "bash"),  # 默认值
+            "os" : platform_data["os"],
+            "qt_exe": os_config.get("qt_exe", ""),
+            "toolchain": platform_data["toolchain"],
+            "triplet": platform_data["triplet"],
+            "MSVC_PATH": platform_data["compiler"]["MSVC_PATH"],
+            "WINDOWS_SDK_PATH": platform_data["compiler"]["WINDOWS_SDK_PATH"],
+            "WINDOWS_SDK_VERSION": platform_data["compiler"]["WINDOWS_SDK_VERSION"],
+            # envPath 需要拼接为分号分隔的字符串
+            "envPath": ";".join(platform_data["envPath"])
+        }
+
+        # 替换占位符
         template = self.replace_placeholders(template, replacements)
         try:
             self.save_json("settings.json", json.loads(template))
@@ -112,23 +108,6 @@ class CCppPropertiesGenerator(BaseGenerator):
         self.save_json("c_cpp_properties.json", json.loads(template))
 
 class LaunchGenerator(BaseGenerator):
-    def get_conan_path(self):
-        if self.system == "Windows":
-            conan_file_name = "conanrunenv-debug-x86_64.bat"
-        else:
-            conan_file_name = "conanrunenv-debug-x86_64.sh"
-        conan_file = self.root_dir / "conan_debug" / "build" / "Debug" / "generators" / conan_file_name
-        try:
-            with open(conan_file, 'r', encoding='utf-8') as f:
-                for line in f:
-                    if line.startswith('set "PATH=') or line.startswith('export PATH='):
-                        path = re.search(r'(?:set "PATH=|export PATH=)(.+?)(?:;%PATH%"|:$PATH)', line).group(1)
-                        return path.replace("\\", "/")
-        except FileNotFoundError:
-            print(f"警告: 未找到 {conan_file}，conan_path 将为空")
-            return ""
-        return ""
-
     def find_executables(self):
         bin_dir = self.root_dir / "build" / "bin"
         exes = []
@@ -142,11 +121,6 @@ class LaunchGenerator(BaseGenerator):
         config = self.load_json("template.json")["launch"]
         template = self.load_json("launch.json.in")
         replacements = config.get(self.current_os, {})
-        dynamic = config.get("dynamic", [])
-        
-        if "conan_path" in dynamic:
-            replacements["conan_path"] = self.get_conan_path()
-
         exes = self.find_executables()
         configurations = []
         for exe in exes:
@@ -196,13 +170,83 @@ class CopyTemplate(BaseGenerator):
             shutil.copy2(src_path, dst_path)
             print(f"已复制: {src_path} -> {dst_path}")
 
+
+class CMakePresetsGenerator(BaseGenerator):
+    def __init__(self):
+        super().__init__()
+        # 覆盖 output_dir 为根目录
+        self.output_dir = self.root_dir
+    def replace_placeholders(self, template, replacements):
+        result = template
+        for key, value in replacements.items():
+            placeholder = f"${{{key}}}"
+            safe_value = str(value).replace("\\", "\\\\")
+            result = result.replace(placeholder, safe_value)
+        return result
+
+    def extract_flags(self, flag_str, flag_type):
+        # 提取指定类型的标志，例如 CMAKE_CXX_FLAGS 或 CMAKE_C_FLAGS
+        prefix = f"-D{flag_type}=\""
+        start = flag_str.find(prefix) + len(prefix)
+        end = flag_str.find("\"", start)
+        return flag_str[start:end]
+
+    def generate(self):
+        template_json = self.load_json("template.json")
+        platform_data = template_json["platform"]
+        tasks_data = template_json["tasks"]
+        c_cpp_data = template_json["c_cpp_properties"]
+        template = self.load_template("CMakePresets.json.in")
+
+        # 准备替换字典
+        replacements = {
+            "generator": platform_data["generator"],
+            "CMAKE_CXX_STANDARD": platform_data["compiler"]["CMAKE_CXX_STANDARD"],
+            "toolchain": platform_data["toolchain"],
+            "triplet": platform_data["triplet"],
+            # Windows
+            "CMAKE_CXX_COMPILER_WINDOWS": platform_data["compiler"]["CMAKE_CXX_COMPILER"],
+            "CMAKE_C_COMPILER_WINDOWS": platform_data["compiler"]["CMAKE_C_COMPILER"],
+            "LINK_PATH_WINDOWS": platform_data["compiler"]["LINK_PATH"],
+            "RC_COMPILER_WINDOWS": platform_data["compiler"]["RC_COMPILER"],
+            "MT_WINDOWS": platform_data["compiler"]["MT"],
+            "debug_cxx_flags_windows": self.extract_flags(tasks_data["Windows"]["debug_flag"], "CMAKE_CXX_FLAGS"),
+            "debug_c_flags_windows": self.extract_flags(tasks_data["Windows"]["debug_flag"], "CMAKE_C_FLAGS"),
+            "rel_cxx_flags_windows": self.extract_flags(tasks_data["Windows"]["rel_flag"], "CMAKE_CXX_FLAGS"),
+            "rel_c_flags_windows": self.extract_flags(tasks_data["Windows"]["rel_flag"], "CMAKE_C_FLAGS"),
+            # Linux
+            "CMAKE_CXX_COMPILER_LINUX": c_cpp_data["Linux"]["compiler_path"].replace("gcc", "g++"),
+            "CMAKE_C_COMPILER_LINUX": c_cpp_data["Linux"]["compiler_path"],
+            "debug_cxx_flags_linux": self.extract_flags(tasks_data["Linux"]["debug_flag"], "CMAKE_CXX_FLAGS"),
+            "debug_c_flags_linux": self.extract_flags(tasks_data["Linux"]["debug_flag"], "CMAKE_C_FLAGS"),
+            "rel_cxx_flags_linux": self.extract_flags(tasks_data["Linux"]["rel_flag"], "CMAKE_CXX_FLAGS"),
+            "rel_c_flags_linux": self.extract_flags(tasks_data["Linux"]["rel_flag"], "CMAKE_C_FLAGS"),
+            # Mac
+            "CMAKE_CXX_COMPILER_MAC": c_cpp_data["Mac"]["compiler_path"].replace("clang", "clang++"),
+            "CMAKE_C_COMPILER_MAC": c_cpp_data["Mac"]["compiler_path"],
+            "debug_cxx_flags_mac": self.extract_flags(tasks_data["Mac"]["debug_flag"], "CMAKE_CXX_FLAGS"),
+            "debug_c_flags_mac": self.extract_flags(tasks_data["Mac"]["debug_flag"], "CMAKE_C_FLAGS"),
+            "rel_cxx_flags_mac": self.extract_flags(tasks_data["Mac"]["rel_flag"], "CMAKE_CXX_FLAGS"),
+            "rel_c_flags_mac": self.extract_flags(tasks_data["Mac"]["rel_flag"], "CMAKE_C_FLAGS"),
+        }
+
+        # 替换占位符
+        template = self.replace_placeholders(template, replacements)
+        try:
+            self.save_json("CMakePresets.json", json.loads(template))
+        except json.JSONDecodeError as e:
+            print(f"JSON 解析错误: {e}")
+            print(f"替换后的字符串: {template}")
+            raise
+
 def main():
     generators = [
         SettingsGenerator(),
         TasksGenerator(),
         CCppPropertiesGenerator(),
         LaunchGenerator(),
-        CopyTemplate()
+        CopyTemplate(),
+        CMakePresetsGenerator()
     ]
     for generator in generators:
         generator.generate()

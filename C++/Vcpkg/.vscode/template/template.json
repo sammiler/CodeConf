@@ -1,6 +1,5 @@
 {
    "settings": {
-       "dynamic" : ["vcpkginclude"],
        "os": {
            "Windows": {
                "os": "windows",
@@ -86,12 +85,13 @@
    ],
    "platform" :
    {
+        "os" : "windows",
         "generator": "Ninja" ,
         "compiler" :
        {
             "NAME" : "clang",
             "VERSION": "19",
-            "CMAKE_CXX_STANDARD" : "11",
+            "CMAKE_CXX_STANDARD" : "17",
             "CMAKE_C_COMPILER" :  "C:/PROGRA~1/MIB055~1/2022/Enterprise/VC/Tools/Llvm/x64/bin/clang-cl.exe",
             "CMAKE_CXX_COMPILER" : "C:/PROGRA~1/MIB055~1/2022/Enterprise/VC/Tools/Llvm/x64/bin/clang-cl.exe",
             "COMPILER_PATH" : "C:/PROGRA~1/MIB055~1/2022/Enterprise/VC/Tools/Llvm/x64/bin/clang-cl.exe",
@@ -113,7 +113,8 @@
         "C:/Tools",
         "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64",
         "C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64",
-        "C:/vcpkg/installed/x64-win-llvm/bin"
+        "C:/vcpkg/installed/x64-win-llvm/bin",
+        "C:/Windows/System32/WindowsPowerShell/v1.0"
        ]
    }
 }
