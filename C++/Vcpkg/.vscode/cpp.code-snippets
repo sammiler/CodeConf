@@ -1,0 +1,72 @@
+{
+    "struct_with_semicolon": {
+      "prefix": "struct",
+      "body": [
+        "struct ${1:Name} {",
+        "    $0",
+        "};"
+      ],
+      "description": "C++ struct with closing semicolon",
+      "scope": "cpp,hpp,h"
+    },
+  
+    "class_with_semicolon": {
+      "prefix": "class",
+      "body": [
+        "class ${1:Name} {",
+        "",
+        "};"
+      ],
+      "description": "C++ class with constructor and destructor",
+      "scope": "cpp,hpp,h"
+    },
+  
+    "enum_plain": {
+      "prefix": "enum",
+      "body": [
+        "enum ${1:EnumName} {",
+        "",
+        "};"
+      ],
+      "description": "C++ enum with closing semicolon",
+      "scope": "cpp,hpp,h"
+    },
+  
+    "enum_class": {
+      "prefix": "enumc",
+      "body": [
+        "enum class ${1:EnumName} {",
+        "",
+        "};"
+      ],
+      "description": "C++ scoped enum (enum class)",
+      "scope": "cpp,hpp,h"
+    },
+  
+    "namespace_block": {
+      "prefix": "ns",
+      "body": [
+        "namespace ${1:Name} {",
+        "",
+        "    $0",
+        "",
+        "} // namespace $1"
+      ],
+      "description": "C++ namespace block",
+      "scope": "cpp,hpp,h"
+    },
+    "Include guard": {
+        "prefix": "#ifn",
+        "body": [
+          "#ifndef ${1:__${TM_FILENAME_BASE}_H__}",
+          "#define ${1}",
+          "",
+          "$0",
+          "",
+          "#endif // ${1}"
+        ],
+        "description": "C/C++ header include guard based on file name",
+        "scope": "cpp,hpp,h"
+      }
+  }
+  

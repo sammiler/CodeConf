@@ -11,7 +11,7 @@
         "--clang-tidy",
         "--all-scopes-completion",
         "--completion-style=detailed",
-        "--header-insertion=iwyu"
+        "--header-insertion=never"
     ],
     "clangd.fallbackFlags": [
         "-I${workspaceFolder}/ext/core/include",
