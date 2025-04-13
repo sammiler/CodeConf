@@ -420,7 +420,7 @@ class GenerateQrcTask(BaseTask):
         
         default_qrc = {
             "run": True,
-            "ignore": ["h", "cpp", "c", "hpp", "mm", "qml", "js", "ui", "json", "sh", "webp", "txt", ".qrc"],
+            "ignore": ["h", "cpp", "c", "hpp", "mm", "qml", "js", "ui", "json", "sh", "webp", "txt", "qrc"],
             "ignoreName": ["忽略的文件名1", "忽略的文件名2"],
             "resources": [
                 {"path": "是相对于根目录的路径1", "prefix": "/"},
