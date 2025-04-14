@@ -1,0 +1,100 @@
+{
+  "files": [
+    {
+      "name": ".clang-format",
+      "dst": "."
+    },
+    {
+      "name": "qt5.natvis",
+      "dst": "."
+    }
+  ],
+  "platform": [
+    {
+      "os": "Windows",
+      "description": "Windows下envPath需要包含CMake所需要的环境",
+      "generator": "Ninja",
+      "CMAKE_CXX_STANDARD": "11",
+      "COMPILER": "clang-cl",
+      "LINK": "lld-link",
+      "RC": "rc",
+      "MT": "mt",
+      "MC": "mc",
+      "debug_flag": {
+        "CMAKE_CXX_FLAGS": "/EHsc /W3 /Zi /FS /MDd /D_ITERATOR_DEBUG_LEVEL=2 /O0",
+        "CMAKE_C_FLAGS": "/EHsc /W3 /Zi /FS /MDd /D_ITERATOR_DEBUG_LEVEL=2 /O0"
+      },
+      "rel_flag": {
+        "CMAKE_CXX_FLAGS": "/EHsc /W3 /MP6 /O2 /FS /MD",
+        "CMAKE_C_FLAGS": "/EHsc /W3 /MP6 /O2 /FS /MD"
+      },
+      "toolchain": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "triplet": "x64-win-llvm",
+      "envPath": [
+        "C:/Program Files/CMake/bin",
+        "C:/Tools",
+        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64",
+        "C:/Program Files (x86)/Windows Kits/10/bin/10.0.22621.0/x64",
+        "C:/vcpkg/installed/x64-win-llvm/bin",
+        "C:/Windows/System32/WindowsPowerShell/v1.0",
+        "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/Llvm/x64/bin"
+      ]
+    },
+    {
+      "os": "Linux",
+      "description": "Linux下使用clang和ninja，vcpkg toolchain",
+      "generator": "Ninja",
+      "CMAKE_CXX_STANDARD": "17",
+      "COMPILER": "clang++",
+      "LINK": "lld",
+      "RC": "llvm-rc",
+      "MT": "llvm-mt",
+      "MC": "llvm-mc",
+      "debug_flag": {
+        "CMAKE_CXX_FLAGS": "-g -O0 -Wall -Wextra -fPIC",
+        "CMAKE_C_FLAGS": "-g -O0 -Wall -fPIC"
+      },
+      "rel_flag": {
+        "CMAKE_CXX_FLAGS": "-O2 -DNDEBUG -fPIC",
+        "CMAKE_C_FLAGS": "-O2 -DNDEBUG -fPIC"
+      },
+      "toolchain": "/home/user/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "triplet": "x64-linux",
+      "linuxEnvPath": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/opt/clang/bin",
+        "/opt/ninja",
+        "/home/user/vcpkg/installed/x64-linux/bin"
+      ]
+    },
+    {
+      "os": "Darwin",
+      "description": "macOS下使用clang和ninja，vcpkg toolchain",
+      "generator": "Ninja",
+      "CMAKE_CXX_STANDARD": "17",
+      "COMPILER": "clang++",
+      "LINK": "ld",
+      "RC": "llvm-rc",
+      "MT": "llvm-mt",
+      "MC": "llvm-mc",
+      "debug_flag": {
+        "CMAKE_CXX_FLAGS": "-g -O0 -Wall -Wextra -fPIC",
+        "CMAKE_C_FLAGS": "-g -O0 -Wall -fPIC"
+      },
+      "rel_flag": {
+        "CMAKE_CXX_FLAGS": "-O2 -DNDEBUG -fPIC",
+        "CMAKE_C_FLAGS": "-O2 -DNDEBUG -fPIC"
+      },
+      "toolchain": "/Users/user/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "triplet": "x64-osx",
+      "macEnvPath": [
+        "/usr/local/bin",
+        "/opt/homebrew/bin",
+        "/opt/homebrew/opt/cmake/bin",
+        "/opt/homebrew/opt/ninja/bin",
+        "/Users/user/vcpkg/installed/x64-osx/bin"
+      ]
+    }
+  ]
+}

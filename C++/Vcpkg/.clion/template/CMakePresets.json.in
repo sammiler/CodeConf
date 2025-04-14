@@ -1,0 +1,187 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "windows-base",
+            "displayName": "Windows Base Config",
+            "description": "Base configuration for Windows with Ninja and clang-cl",
+            "generator": "${WIN_GENERATOR}",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "${WIN_COMPILER}",
+                "CMAKE_CXX_COMPILER": "${WIN_COMPILER}",
+                "CMAKE_LINKER": "${WIN_LINK}",
+                "CMAKE_RC_COMPILER": "${WIN_RC}",
+                "CMAKE_MT": "${WIN_MT}",
+                "CMAKE_CXX_STANDARD": "${WIN_CMAKE_CXX_STANDARD}",
+                "CMAKE_TOOLCHAIN_FILE": "${WIN_TOOLCHAIN}",
+                "VCPKG_TARGET_TRIPLET": "${WIN_TRIPLET}"
+            },
+            "environment": {
+                "PATH": "${WIN_ENV_PATH}"
+            },
+            "hidden": true
+        },
+        {
+            "name": "windows-debug",
+            "displayName": "Windows Debug",
+            "inherits": "windows-base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS": "${WIN_DEBUG_CXX_FLAGS}",
+                "CMAKE_C_FLAGS": "${WIN_DEBUG_C_FLAGS}",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/bin"
+            }
+        },
+        {
+            "name": "windows-release",
+            "displayName": "Windows Release",
+            "inherits": "windows-base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_FLAGS": "${WIN_REL_CXX_FLAGS}",
+                "CMAKE_C_FLAGS": "${WIN_REL_C_FLAGS}",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/bin"
+            }
+        },
+        {
+            "name": "linux-base",
+            "displayName": "Linux Base Config",
+            "description": "Base configuration for Linux with Ninja and clang",
+            "generator": "${LINUX_GENERATOR}",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "${LINUX_COMPILER}",
+                "CMAKE_C_COMPILER": "${LINUX_COMPILER}",
+                "CMAKE_CXX_STANDARD": "${LINUX_CMAKE_CXX_STANDARD}"
+            },
+            "environment": {
+                "PATH": "${LINUX_ENV_PATH}"
+            },
+            "hidden": true
+        },
+        {
+            "name": "linux-debug",
+            "displayName": "Linux Debug",
+            "inherits": "linux-base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS": "${LINUX_DEBUG_CXX_FLAGS}",
+                "CMAKE_C_FLAGS": "${LINUX_DEBUG_C_FLAGS}",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/bin"
+            }
+        },
+        {
+            "name": "linux-release",
+            "displayName": "Linux Release",
+            "inherits": "linux-base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_FLAGS": "${LINUX_REL_CXX_FLAGS}",
+                "CMAKE_C_FLAGS": "${LINUX_REL_C_FLAGS}",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/bin"
+            }
+        },
+        {
+            "name": "mac-base",
+            "displayName": "Mac Base Config",
+            "description": "Base configuration for macOS with Ninja and clang",
+            "generator": "${MAC_GENERATOR}",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "${MAC_COMPILER}",
+                "CMAKE_C_COMPILER": "${MAC_COMPILER}",
+                "CMAKE_CXX_STANDARD": "${MAC_CMAKE_CXX_STANDARD}"
+            },
+            "environment": {
+                "PATH": "${MAC_ENV_PATH}"
+            },
+            "hidden": true
+        },
+        {
+            "name": "mac-debug",
+            "displayName": "Mac Debug",
+            "inherits": "mac-base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS": "${MAC_DEBUG_CXX_FLAGS}",
+                "CMAKE_C_FLAGS": "${MAC_DEBUG_C_FLAGS}",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/bin"
+            }
+        },
+        {
+            "name": "mac-release",
+            "displayName": "Mac Release",
+            "inherits": "mac-base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_FLAGS": "${MAC_REL_CXX_FLAGS}",
+                "CMAKE_C_FLAGS": "${MAC_REL_C_FLAGS}",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/build/bin"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "windows-debug-build",
+            "configurePreset": "windows-debug",
+            "jobs": 6
+        },
+        {
+            "name": "windows-release-build",
+            "configurePreset": "windows-release",
+            "jobs": 6
+        },
+        {
+            "name": "linux-debug-build",
+            "configurePreset": "linux-debug"
+        },
+        {
+            "name": "linux-release-build",
+            "configurePreset": "linux-release"
+        },
+        {
+            "name": "mac-debug-build",
+            "configurePreset": "mac-debug"
+        },
+        {
+            "name": "mac-release-build",
+            "configurePreset": "mac-release"
+        }
+    ]
+}
