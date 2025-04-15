@@ -7,14 +7,23 @@ from pathlib import Path
 
 class ProjectRootFinder:
     def find_root(self, start_path: Path) -> Path:
-        current = start_path.resolve()
-        cmake_lists = ["CMakeLists.txt", "cmakelists.txt"]
-        while current != current.parent:
-            for name in cmake_lists:
-                if (current / name).exists():
-                    return current
-            current = current.parent
-        raise FileNotFoundError("未找到CMakeLists.txt，确认是否在CMake项目中")
+        # 从环境变量 PROJECT_DIR 获取项目根路径
+        project_dir = os.environ.get("PROJECT_DIR")
+        
+        # 检查环境变量是否存在
+        if not project_dir:
+            raise FileNotFoundError("环境变量 PROJECT_DIR 未设置")
+        
+        # 将字符串路径转换为 Path 对象并解析
+        root_path = Path(project_dir).resolve()
+        
+        # 验证路径是否存在
+        if not root_path.exists():
+            raise FileNotFoundError(f"PROJECT_DIR 指定的路径 {root_path} 不存在")
+        
+        # 验证路径是否为目录
+        if not root_path.is_dir():
+            raise FileNotFoundError(f"PROJECT_DIR 指定的路径 {root_path} 不是一个目录")
 
 class CMakePresetsGenerator:
     def __init__(self, template_dir: Path):
