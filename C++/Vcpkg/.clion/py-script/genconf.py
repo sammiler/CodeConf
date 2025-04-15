@@ -25,6 +25,7 @@ class ProjectRootFinder:
         if not root_path.is_dir():
             raise FileNotFoundError(f"PROJECT_DIR 指定的路径 {root_path} 不是一个目录")
 
+        return root_path
 class CMakePresetsGenerator:
     def __init__(self, template_dir: Path):
         self.template_dir = template_dir
