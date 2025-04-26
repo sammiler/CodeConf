@@ -14,7 +14,7 @@
       "os": "Windows",
       "description": "Windows下envPath需要包含CMake所需要的环境",
       "generator": "Ninja",
-      "CMAKE_CXX_STANDARD": "11",
+      "CMAKE_CXX_STANDARD": "17",
       "COMPILER": "clang-cl",
       "LINK": "lld-link",
       "RC": "rc",
