@@ -1,0 +1,10 @@
+vcpkg.exe install qt5-base --overlay-ports=C:\vcpkgcopy\ports --overlay-triplets=C:\Qt\vcpkg-clang-triplet --host-triplet=x64-win-llvm    使用clang的核心命令
+vcpkg.exe install   --overlay-triplets=C:\Qt\vcpkg-clang-triplet  --overlay-ports=C:\vcpkgcopy\ports   --host-triplet=x64-win-llvm --x-install-root=C:/vcpkg5.9/installed 每次安装都会删除
+vcpkg export --zip --output-dir=. --x-install-root=C:/vcpkg5.9/installed 打包成zip
+vcpkg尽可能用副本，否则会出现修改本地Qt的port，复制到安装目录，本地的引用这些安装的会出大问题。
+一个项目一个vcpkg文件夹，先用buildin选个大概的时间，确定差不多的版本，然后在copy文件夹checkout到相应的版本进行安装。
+vcpkg的大坑，Qt Debug链接的库是Release的lib，需要加上下面这两行。
+set_property(TARGET olive-editor PROPERTY CONFIGURATIONS Debug)
+set_property(TARGET olive-editor PROPERTY DEBUG_POSTFIX "d")
+
+
