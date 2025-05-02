@@ -5,44 +5,44 @@
   "dependencies": [
     { "name": "atl" },
     { "name": "brotli" },
-    { "name": "bzip2" }, // Feature [tool] removed
+    { "name": "bzip2" },
     { "name": "double-conversion" },
     { "name": "egl-registry" },
     { "name": "expat" },
-    { "name": "ffmpeg" }, // Features removed
+    { "name": "ffmpeg" }, 
     { "name": "fmt" },
-    { "name": "freetype" }, // Features removed
-    { "name": "harfbuzz" }, // Feature [freetype] removed
+    { "name": "freetype" }, 
+    { "name": "harfbuzz" },
     { "name": "imath" },
     { "name": "lcms" },
-    { "name": "libdeflate" }, // Features removed
+    { "name": "libdeflate" },
     { "name": "libdisasm" },
     { "name": "libjpeg-turbo" },
     { "name": "liblzma" },
     { "name": "libpng" },
-    { "name": "libwebp" }, // Features removed
-    { "name": "minizip-ng" }, // Features removed
+    { "name": "libwebp" }, 
+    { "name": "minizip-ng" }, 
     { "name": "opencolorio" },
     { "name": "openexr" },
     { "name": "openimageio" },
     { "name": "openssl" },
     { "name": "opentimelineio" },
-    { "name": "pcre2" }, // Features removed
+    { "name": "pcre2" }, 
     { "name": "pkgconf" },
     { "name": "portaudio" },
     { "name": "pystring" },
     { "name": "qt5-activeqt" },
-    { "name": "qt5-base" }, // Feature [openssl] removed
-    { "name": "qt5-declarative" }, // Features removed
-    { "name": "qt5-imageformats" }, // Features removed
+    { "name": "qt5-base" }, 
+    { "name": "qt5-declarative" },
+    { "name": "qt5-imageformats" },
     { "name": "qt5-multimedia" },
     { "name": "qt5-quickcontrols2" },
     { "name": "qt5-svg" },
     { "name": "qt5-tools" },
     { "name": "qt5-xmlpatterns" },
     { "name": "robin-map" },
-    { "name": "sqlite3" }, // Feature [json1] removed
-    { "name": "tiff" }, // Features removed
+    { "name": "sqlite3" }, 
+    { "name": "tiff" }, 
     { "name": "yaml-cpp" },
     { "name": "zlib" },
     { "name": "zstd" }
