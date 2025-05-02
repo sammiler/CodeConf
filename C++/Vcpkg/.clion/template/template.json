@@ -15,7 +15,8 @@
       "description": "Windows下envPath需要包含CMake所需要的环境",
       "generator": "Ninja",
       "CMAKE_CXX_STANDARD": "17",
-      "COMPILER": "clang-cl",
+      "C_COMPILER": "clang-cl",
+      "CXX_COMPILER": "clang-cl",
       "LINK": "lld-link",
       "RC": "rc",
       "MT": "mt",
@@ -45,11 +46,8 @@
       "description": "Linux下使用clang和ninja，vcpkg toolchain",
       "generator": "Ninja",
       "CMAKE_CXX_STANDARD": "17",
-      "COMPILER": "clang++",
-      "LINK": "lld",
-      "RC": "llvm-rc",
-      "MT": "llvm-mt",
-      "MC": "llvm-mc",
+      "C_COMPILER": "clang",
+      "CXX_COMPILER": "clang++",
       "debug_flag": {
         "CMAKE_CXX_FLAGS": "-g -O0 -Wall -Wextra -fPIC",
         "CMAKE_C_FLAGS": "-g -O0 -Wall -fPIC"
@@ -58,14 +56,11 @@
         "CMAKE_CXX_FLAGS": "-O2 -DNDEBUG -fPIC",
         "CMAKE_C_FLAGS": "-O2 -DNDEBUG -fPIC"
       },
-      "toolchain": "/home/user/vcpkg/scripts/buildsystems/vcpkg.cmake",
-      "triplet": "x64-linux",
+      "toolchain": "/home/sammiller/APP/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "triplet": "x64-linux-clang",
       "linuxEnvPath": [
         "/usr/local/bin",
-        "/usr/bin",
-        "/opt/clang/bin",
-        "/opt/ninja",
-        "/home/user/vcpkg/installed/x64-linux/bin"
+        "/usr/bin"
       ]
     },
     {
@@ -73,11 +68,8 @@
       "description": "macOS下使用clang和ninja，vcpkg toolchain",
       "generator": "Ninja",
       "CMAKE_CXX_STANDARD": "17",
-      "COMPILER": "clang++",
-      "LINK": "ld",
-      "RC": "llvm-rc",
-      "MT": "llvm-mt",
-      "MC": "llvm-mc",
+      "C_COMPILER": "clang",
+      "CXX_COMPILER": "clang++",
       "debug_flag": {
         "CMAKE_CXX_FLAGS": "-g -O0 -Wall -Wextra -fPIC",
         "CMAKE_C_FLAGS": "-g -O0 -Wall -fPIC"
@@ -86,14 +78,11 @@
         "CMAKE_CXX_FLAGS": "-O2 -DNDEBUG -fPIC",
         "CMAKE_C_FLAGS": "-O2 -DNDEBUG -fPIC"
       },
-      "toolchain": "/Users/user/vcpkg/scripts/buildsystems/vcpkg.cmake",
-      "triplet": "x64-osx",
+      "toolchain": "/home/sammiller/APP/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "triplet": "x64-osx-clang",
       "macEnvPath": [
         "/usr/local/bin",
-        "/opt/homebrew/bin",
-        "/opt/homebrew/opt/cmake/bin",
-        "/opt/homebrew/opt/ninja/bin",
-        "/Users/user/vcpkg/installed/x64-osx/bin"
+        "/opt/homebrew/bin"
       ]
     }
   ]

@@ -75,7 +75,8 @@ class CMakePresetsGenerator:
             replacements.update({
                 f"${{{prefix}GENERATOR}}": platform_config.get("generator", "Ninja"),
                 f"${{{prefix}CMAKE_CXX_STANDARD}}": platform_config.get("CMAKE_CXX_STANDARD", "17"),
-                f"${{{prefix}COMPILER}}": platform_config.get("COMPILER", ""),
+                f"${{{prefix}C_COMPILER}}": platform_config.get("C_COMPILER", ""),
+                f"${{{prefix}CXX_COMPILER}}": platform_config.get("CXX_COMPILER", ""),
                 f"${{{prefix}LINK}}": platform_config.get("LINK", ""),
                 f"${{{prefix}RC}}": platform_config.get("RC", ""),
                 f"${{{prefix}MT}}": platform_config.get("MT", ""),
