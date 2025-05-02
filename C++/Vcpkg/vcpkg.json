@@ -1,37 +1,95 @@
 {
-    "name": "olive",
-    "version": "1.0.0",
-    "builtin-baseline": "782ccc18d8b819cdef6794a6c03eb3d9f7cd04aa",
-    "dependencies": [
-          { "name": "ffmpeg" },
-          { "name": "openimageio" },
-          { "name": "openexr" },
-          { "name": "imath" },
-          { "name": "opencolorio" },
-          { "name": "portaudio" },
-          { "name": "yaml-cpp" },
-          { "name": "fmt" },
-          { "name": "qt5-base" },
-          { "name": "qt5-declarative" },
-          { "name": "qt5-multimedia" },
-          { "name": "qt5-quickcontrols2" },
-          { "name": "qt5-tools" },
-          { "name": "qt5-xmlpatterns" }
-        ],
-        "overrides": [
-          { "name": "ffmpeg", "version": "4.4.3", "port-version": 0 },
-          { "name": "openimageio", "version": "2.4.5.0", "port-version": 0 },
-          { "name": "openexr", "version": "3.1.5", "port-version": 0 },
-          { "name": "imath", "version": "3.1.5", "port-version": 0 },
-          { "name": "opencolorio", "version": "2.0.1", "port-version": 0 },
-          { "name": "portaudio", "version": "19.7", "port-version": 0 },
-          { "name": "yaml-cpp", "version": "0.8.0", "port-version": 0 },
-          { "name": "fmt", "version": "9.1.0", "port-version": 0 },
-          { "name": "qt5-base", "version": "5.15.2", "port-version": 20 },
-          { "name": "qt5-declarative", "version": "5.15.2", "port-version": 3 },
-          { "name": "qt5-multimedia", "version": "5.15.2", "port-version": 1 },
-          { "name": "qt5-quickcontrols2", "version": "5.15.2", "port-version": 0 },
-          { "name": "qt5-tools", "version": "5.15.2", "port-version": 1 },
-          { "name": "qt5-xmlpatterns", "version": "5.15.2", "port-version": 1 }
-        ]
-  }
+  "name": "olive",
+  "version": "1.0.0",
+  "builtin-baseline": "782ccc18d8b819cdef6794a6c03eb3d9f7cd04aa",
+  "dependencies": [
+    { "name": "atl" },
+    { "name": "brotli" },
+    { "name": "bzip2" }, // Feature [tool] removed
+    { "name": "double-conversion" },
+    { "name": "egl-registry" },
+    { "name": "expat" },
+    { "name": "ffmpeg" }, // Features removed
+    { "name": "fmt" },
+    { "name": "freetype" }, // Features removed
+    { "name": "harfbuzz" }, // Feature [freetype] removed
+    { "name": "imath" },
+    { "name": "lcms" },
+    { "name": "libdeflate" }, // Features removed
+    { "name": "libdisasm" },
+    { "name": "libjpeg-turbo" },
+    { "name": "liblzma" },
+    { "name": "libpng" },
+    { "name": "libwebp" }, // Features removed
+    { "name": "minizip-ng" }, // Features removed
+    { "name": "opencolorio" },
+    { "name": "openexr" },
+    { "name": "openimageio" },
+    { "name": "openssl" },
+    { "name": "opentimelineio" },
+    { "name": "pcre2" }, // Features removed
+    { "name": "pkgconf" },
+    { "name": "portaudio" },
+    { "name": "pystring" },
+    { "name": "qt5-activeqt" },
+    { "name": "qt5-base" }, // Feature [openssl] removed
+    { "name": "qt5-declarative" }, // Features removed
+    { "name": "qt5-imageformats" }, // Features removed
+    { "name": "qt5-multimedia" },
+    { "name": "qt5-quickcontrols2" },
+    { "name": "qt5-svg" },
+    { "name": "qt5-tools" },
+    { "name": "qt5-xmlpatterns" },
+    { "name": "robin-map" },
+    { "name": "sqlite3" }, // Feature [json1] removed
+    { "name": "tiff" }, // Features removed
+    { "name": "yaml-cpp" },
+    { "name": "zlib" },
+    { "name": "zstd" }
+  ],
+  "overrides": [
+    { "name": "atl", "version": "0" },
+    { "name": "brotli", "version": "1.1.0", "port-version": 1 },
+    { "name": "bzip2", "version": "1.0.8", "port-version": 5 },
+    { "name": "double-conversion", "version": "3.3.0", "port-version": 1 },
+    { "name": "egl-registry", "version": "2024-01-25" },
+    { "name": "expat", "version": "2.5.0", "port-version": 3 },
+    { "name": "ffmpeg", "version": "6.1" },
+    { "name": "fmt", "version": "10.1.1" },
+    { "name": "freetype", "version": "2.13.3" },
+    { "name": "harfbuzz", "version": "10.2.0", "port-version": 3 },
+    { "name": "imath", "version": "3.1.12" },
+    { "name": "lcms", "version": "2.16" },
+    { "name": "libdeflate", "version": "1.23" },
+    { "name": "libdisasm", "version": "0.23", "port-version": 11 },
+    { "name": "libjpeg-turbo", "version": "3.0.1" },
+    { "name": "liblzma", "version": "5.4.4" },
+    { "name": "libpng", "version": "1.6.39", "port-version": 1 },
+    { "name": "libwebp", "version": "1.5.0" },
+    { "name": "minizip-ng", "version": "4.0.2" },
+    { "name": "opencolorio", "version": "2.2.1", "port-version": 1 },
+    { "name": "openexr", "version": "3.3.2" },
+    { "name": "openimageio", "version": "2.5.8.0" },
+    { "name": "openssl", "version": "3.4.1" },
+    { "name": "opentimelineio", "version": "1.0.0" },
+    { "name": "pcre2", "version": "10.45" },
+    { "name": "pkgconf", "version": "2.4.3" },
+    { "name": "portaudio", "version": "19.7", "port-version": 6 },
+    { "name": "pystring", "version": "1.1.4" },
+    { "name": "qt5-activeqt", "version": "5.15.16" },
+    { "name": "qt5-base", "version": "5.15.16", "port-version": 1 },
+    { "name": "qt5-declarative", "version": "5.15.16" },
+    { "name": "qt5-imageformats", "version": "5.15.16" },
+    { "name": "qt5-multimedia", "version": "5.15.16" },
+    { "name": "qt5-quickcontrols2", "version": "5.15.16" },
+    { "name": "qt5-svg", "version": "5.15.16" },
+    { "name": "qt5-tools", "version": "5.15.16" },
+    { "name": "qt5-xmlpatterns", "version": "5.15.16" },
+    { "name": "robin-map", "version": "1.2.1" },
+    { "name": "sqlite3", "version": "3.49.1" },
+    { "name": "tiff", "version": "4.6.0", "port-version": 1 },
+    { "name": "yaml-cpp", "version": "0.8.0", "port-version": 1 },
+    { "name": "zlib", "version": "1.3" },
+    { "name": "zstd", "version": "1.5.5", "port-version": 2 }
+  ]
+}
