@@ -1,51 +1,22 @@
-#该文件放在源目录cmake文件夹下
 include_guard(GLOBAL)
+
+# --- 路径设置 (保持不变) ---
 set(BASE_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/../../include")
 set(OPENTIMELINEIO_INCLUDE_SUBDIR "${BASE_INCLUDE_DIR}/opentimelineio")
+set(OPENTIME_INCLUDE_SUBDIR "${BASE_INCLUDE_DIR}/opentime")
 set(OPENTIMELINEIO_INCLUDE_DIRS "${OPENTIMELINEIO_INCLUDE_SUBDIR}")
 
 if(NOT EXISTS "${OPENTIMELINEIO_INCLUDE_SUBDIR}")
     message(FATAL_ERROR "OpenTimelineIO include directory ${OPENTIMELINEIO_INCLUDE_SUBDIR} does not exist!")
 endif()
-
-file(GLOB_RECURSE ALL_FILES "${OPENTIMELINEIO_INCLUDE_SUBDIR}/*.h" "${OPENTIMELINEIO_INCLUDE_SUBDIR}/*.hpp")
-if(NOT ALL_FILES)
-    message(WARNING "No header files found in ${OPENTIMELINEIO_INCLUDE_SUBDIR}")
+if(NOT EXISTS "${OPENTIME_INCLUDE_SUBDIR}")
+    message(FATAL_ERROR "OpenTimelineIO include directory ${OPENTIME_INCLUDE_SUBDIR} does not exist!")
 endif()
 
-function(add_parent_dirs DIR_PATH INCLUDE_LIST)
-    file(TO_CMAKE_PATH "${DIR_PATH}" CURRENT_DIR)
-    file(TO_CMAKE_PATH "${OPENTIMELINEIO_INCLUDE_SUBDIR}" NORMALIZED_SUBDIR)
-    file(TO_CMAKE_PATH "${BASE_INCLUDE_DIR}" NORMALIZED_BASE_DIR)
-    set(ITERATION 0)
-    while(TRUE)
-        list(APPEND ${INCLUDE_LIST} "${CURRENT_DIR}")
-        get_filename_component(PARENT_DIR "${CURRENT_DIR}" DIRECTORY)
-        file(TO_CMAKE_PATH "${PARENT_DIR}" PARENT_DIR)
-        if("${PARENT_DIR}" STREQUAL "${NORMALIZED_SUBDIR}" OR
-                "${PARENT_DIR}" STREQUAL "${NORMALIZED_BASE_DIR}" OR
-                "${PARENT_DIR}" STREQUAL "" OR
-                "${CURRENT_DIR}" STREQUAL "${PARENT_DIR}")
-            break()
-        endif()
-        set(CURRENT_DIR "${PARENT_DIR}")
-        math(EXPR ITERATION "${ITERATION} + 1")
-        if(ITERATION GREATER 100)
-            message(FATAL_ERROR "Infinite loop detected in add_parent_dirs: CURRENT_DIR = ${CURRENT_DIR}")
-        endif()
-    endwhile()
-    set(${INCLUDE_LIST} ${${INCLUDE_LIST}} PARENT_SCOPE)
-endfunction()
-
-foreach(FILE ${ALL_FILES})
-    get_filename_component(FILE_DIR "${FILE}" DIRECTORY)
-    add_parent_dirs("${FILE_DIR}" OPENTIMELINEIO_INCLUDE_DIRS)
-endforeach()
-list(REMOVE_DUPLICATES OPENTIMELINEIO_INCLUDE_DIRS)
+list(APPEND OPENTIMELINEIO_INCLUDE_DIRS ${OPENTIME_INCLUDE_SUBDIR} ${BASE_INCLUDE_DIR})
 
 set(LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/../../lib")
 set(DEBUG_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/../../debug/lib")
-
 
 if(NOT EXISTS "${LIB_DIR}")
     message(FATAL_ERROR "LIB_DIR ${LIB_DIR} does not exist!")
@@ -54,26 +25,65 @@ if(NOT EXISTS "${DEBUG_LIB_DIR}")
     message(FATAL_ERROR "DEBUG_LIB_DIR ${DEBUG_LIB_DIR} does not exist!")
 endif()
 
-
-# 定义导入目标 OpenTimelineIO::opentimelineio
-add_library(OpenTimelineIO::OpenTimelineIO SHARED IMPORTED)
-
-# 设置 Release 版本属性
-set_target_properties(OpenTimelineIO::OpenTimelineIO PROPERTIES
-        IMPORTED_IMPLIB "${LIB_DIR}/libopentimelineio.so"
-        INTERFACE_INCLUDE_DIRECTORIES "${OPENTIMELINEIO_INCLUDE_DIRS}"
-        INTERFACE_LINK_LIBRARIES "${LIB_DIR}/libopentime.so"
+# --- 检查文件存在性 (保持不变) ---
+foreach(lib
+        "${LIB_DIR}/libopentime.so"
+        "${LIB_DIR}/libopentimelineio.so"
+        "${DEBUG_LIB_DIR}/libopentime.so"
+        "${DEBUG_LIB_DIR}/libopentimelineio.so"
 )
-
-# 设置 Debug 版本属性
-set_target_properties(OpenTimelineIO::OpenTimelineIO PROPERTIES
-        IMPORTED_IMPLIB_DEBUG "${DEBUG_LIB_DIR}/libopentimelineio.so"
-        INTERFACE_LINK_LIBRARIES_DEBUG "${DEBUG_LIB_DIR}/libopentime.so"
-)
-
-# 检查文件存在性
-foreach(lib "${LIB_DIR}/libopentime.so"  "${LIB_DIR}/libopentimelineio.so"  "${DEBUG_LIB_DIR}/libopentime.so" "${DEBUG_LIB_DIR}/libopentimelineio.so" )
     if(NOT EXISTS "${lib}")
         message(FATAL_ERROR "Library file ${lib} does not exist!")
     endif()
 endforeach()
+
+# --- 定义导入目标 OpenTimelineIO::opentime ---
+if(NOT TARGET OpenTimelineIO::opentime)
+    add_library(OpenTimelineIO::opentime SHARED IMPORTED)
+
+    set_target_properties(OpenTimelineIO::opentime PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${OPENTIMELINEIO_INCLUDE_DIRS}" # 或者更具体的 OPENTIME_INCLUDE_SUBDIR
+    )
+
+    # Release 版本属性
+    set_target_properties(OpenTimelineIO::opentime PROPERTIES
+            IMPORTED_LOCATION_RELEASE "${LIB_DIR}/libopentime.so"
+    )
+    # Debug 版本属性
+    set_target_properties(OpenTimelineIO::opentime PROPERTIES
+            IMPORTED_LOCATION_DEBUG "${DEBUG_LIB_DIR}/libopentime.so"
+    )
+    # 明确声明支持的配置
+    set_property(TARGET OpenTimelineIO::opentime APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_property(TARGET OpenTimelineIO::opentime APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+endif()
+
+# --- 定义导入目标 OpenTimelineIO::OpenTimelineIO ---
+if(NOT TARGET OpenTimelineIO::OpenTimelineIO)
+    add_library(OpenTimelineIO::OpenTimelineIO SHARED IMPORTED)
+
+    set_target_properties(OpenTimelineIO::OpenTimelineIO PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${OPENTIMELINEIO_INCLUDE_DIRS}"
+            # 链接到 OpenTimelineIO::opentime 目标，而不是具体路径
+            INTERFACE_LINK_LIBRARIES "OpenTimelineIO::opentime"
+    )
+
+    # Release 版本属性
+    set_target_properties(OpenTimelineIO::OpenTimelineIO PROPERTIES
+            IMPORTED_LOCATION_RELEASE "${LIB_DIR}/libopentimelineio.so"
+    )
+    # Debug 版本属性
+    set_target_properties(OpenTimelineIO::OpenTimelineIO PROPERTIES
+            IMPORTED_LOCATION_DEBUG "${DEBUG_LIB_DIR}/libopentimelineio.so"
+    )
+    # 明确声明支持的配置
+    set_property(TARGET OpenTimelineIO::OpenTimelineIO APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
+    set_property(TARGET OpenTimelineIO::OpenTimelineIO APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
+endif()
+
+# 确保旧变量仍然可用（如果其他地方直接使用它们）
+# 但理想情况下，消费者应该只链接到 OpenTimelineIO::OpenTimelineIO
+set(OPENTIMELINEIO_LIBRARY OpenTimelineIO::OpenTimelineIO)
+set(OPENTIMELINEIO_LIBRARIES OpenTimelineIO::OpenTimelineIO)
+
+message(STATUS "OpenTimelineIO imported targets OpenTimelineIO::OpenTimelineIO and OpenTimelineIO::opentime configured.")

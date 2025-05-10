@@ -9,6 +9,94 @@
       "dst": "."
     }
   ],
+  "workflows": [
+    {
+      "Custom": [
+        {
+          "description": "ClangFormat",
+          "type": "build",
+          "target": "clang-format",
+          "option": {
+            "ENABLE_CLANG_FORMAT": true
+          }
+        },
+        {
+          "description": "ClangFormat",
+          "type": "build",
+          "target": "clang-format-check",
+          "option": {
+            "ENABLE_CLANG_FORMAT_CHECK": false
+          }
+        },
+        {
+          "description": "Valgrind",
+          "type": "test",
+          "option": {
+            "TESTS_VALGRIND": false
+          },
+          "args": {
+            "use_launcher": true,
+            "launcher_command": ["valgrind", "--leak-check=full", "--show-leak-kinds=all", "--error-exitcode=1", "--log-file=valgrind-%p.log"],
+            "launcher_test_preset_suffix": "-valgrind",
+            "apply_to_build_types": ["debug"]
+          }
+        },
+        {
+          "description": "Standard Unit-Tests",
+          "type": "test",
+          "option": {
+            "BUILD_TESTS": true
+          },
+          "args": {
+            "apply_to_build_types": ["debug", "release"]
+          }
+        }
+      ]
+    },
+    {
+      "BuildAndFormat": [
+        {
+          "description": "ClangFormat",
+          "type": "build",
+          "target": "clang-format",
+          "option": {
+            "ENABLE_CLANG_FORMAT": true
+          }
+        },
+        {
+          "description": "ClangFormat Check",
+          "type": "build",
+          "target": "clang-format-check",
+          "option": {
+            "ENABLE_CLANG_FORMAT_CHECK": true
+          }
+        },
+        {
+          "description": "Valgrind",
+          "type": "test",
+          "option": {
+            "TESTS_VALGRIND": false
+          },
+          "args": {
+            "use_launcher": true,
+            "launcher_command": ["valgrind", "--leak-check=full", "--show-leak-kinds=all", "--error-exitcode=1", "--log-file=valgrind-%p.log"],
+            "launcher_test_preset_suffix": "-valgrind",
+            "apply_to_build_types": ["debug"]
+          }
+        },
+        {
+          "description": "Standard Unit-Tests",
+          "type": "test",
+          "option": {
+            "BUILD_TESTS": false
+          },
+          "args": {
+            "apply_to_build_types": ["debug", "release"]
+          }
+        }
+      ]
+    }
+  ],
   "platform": [
     {
       "os": "Windows",
@@ -45,7 +133,7 @@
       "os": "Linux",
       "description": "Linux下使用clang和ninja，vcpkg toolchain",
       "generator": "Ninja",
-      "CMAKE_CXX_STANDARD": "17",
+      "CMAKE_CXX_STANDARD": "20",
       "C_COMPILER": "clang",
       "CXX_COMPILER": "clang++",
       "debug_flag": {
@@ -56,8 +144,8 @@
         "CMAKE_CXX_FLAGS": "-O2 -DNDEBUG -fPIC",
         "CMAKE_C_FLAGS": "-O2 -DNDEBUG -fPIC"
       },
-      "toolchain": "/home/sammiller/APP/vcpkg/scripts/buildsystems/vcpkg.cmake",
-      "triplet": "x64-linux-clang",
+      "toolchain": "/home/sammiller/MyFile/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "triplet": "x64-linux-llvm",
       "linuxEnvPath": [
         "/usr/local/bin",
         "/usr/bin"
@@ -79,7 +167,7 @@
         "CMAKE_C_FLAGS": "-O2 -DNDEBUG -fPIC"
       },
       "toolchain": "/home/sammiller/APP/vcpkg/scripts/buildsystems/vcpkg.cmake",
-      "triplet": "x64-osx-clang",
+      "triplet": "x64-osx-llvm",
       "macEnvPath": [
         "/usr/local/bin",
         "/opt/homebrew/bin"
