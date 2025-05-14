@@ -17,7 +17,7 @@
           "type": "build",
           "target": "clang-format",
           "option": {
-            "ENABLE_CLANG_FORMAT": true
+            "ENABLE_CLANG_FORMAT": false
           }
         },
         {
@@ -45,7 +45,7 @@
           "description": "Standard Unit-Tests",
           "type": "test",
           "option": {
-            "BUILD_TESTS": true
+            "BUILD_TESTS": false
           },
           "args": {
             "apply_to_build_types": ["debug", "release"]
@@ -69,6 +69,22 @@
           "target": "clang-format-check",
           "option": {
             "ENABLE_CLANG_FORMAT_CHECK": true
+          }
+        },
+        {
+          "description": "ClangTidy Export",
+          "type": "build",
+          "target": "clang-tidy-export-all",
+          "option": {
+            "ENABLE_CLANG_TIDY_FIX_EXPORT": false
+          }
+        },
+        {
+          "description": "ClangTidy Apply",
+          "type": "build",
+          "target": "clang-tidy-apply",
+          "option": {
+            "ENABLE_CLANG_TIDY_Apply_EXPORT": false
           }
         },
         {
@@ -101,7 +117,7 @@
     {
       "os": "Windows",
       "description": "Windows下envPath需要包含CMake所需要的环境",
-      "generator": "Ninja",
+      "generator": "Visual Studio 17 2022",
       "CMAKE_CXX_STANDARD": "17",
       "C_COMPILER": "clang-cl",
       "CXX_COMPILER": "clang-cl",
@@ -109,6 +125,14 @@
       "RC": "rc",
       "MT": "mt",
       "MC": "mc",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      },
+      "toolset": {
+        "value": "ClangCL",
+        "strategy": "set"
+      },
       "debug_flag": {
         "CMAKE_CXX_FLAGS": "/EHsc /W3 /Zi /FS /MDd /D_ITERATOR_DEBUG_LEVEL=2 /O0",
         "CMAKE_C_FLAGS": "/EHsc /W3 /Zi /FS /MDd /D_ITERATOR_DEBUG_LEVEL=2 /O0"
@@ -134,8 +158,8 @@
       "description": "Linux下使用clang和ninja，vcpkg toolchain",
       "generator": "Ninja",
       "CMAKE_CXX_STANDARD": "20",
-      "C_COMPILER": "clang",
-      "CXX_COMPILER": "clang++",
+      "C_COMPILER": "/usr/bin/clang",
+      "CXX_COMPILER": "/usr/bin/clang++",
       "debug_flag": {
         "CMAKE_CXX_FLAGS": "-g -O0 -Wall -Wextra -fPIC",
         "CMAKE_C_FLAGS": "-g -O0 -Wall -fPIC"
