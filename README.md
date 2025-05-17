@@ -55,7 +55,7 @@ bash
 
 CollapseWrapCopy
 
-`git clone https://github.com/sammiler/vscodeconf.git`
+`git clone https://github.com/sammiler/codeconf.git`
 
 或者从 GitHub 下载 ZIP 文件并解压。
 
