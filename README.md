@@ -1,6 +1,6 @@
 ## 项目简介
 
-欢迎使用 **VSCode 配置文件项目**！这是一个专为 Visual Studio Code（简称 VSCode）设计的开源项目，旨在通过提供精心设计的配置文件，帮助开发者快速搭建高效的开发环境。当前版本主要提供全局配置（如 settings.json 和 keybindings.json），并计划在未来扩展支持多种编程语言的个性化配置（如 JavaScript、Python、Java 等）。
+欢迎使用 **VSCode 和CLion 配置文件项目**！这是一个专为 Visual Studio Code（简称 VSCode）和CLion设计的开源项目，旨在通过提供精心设计的配置文件，帮助开发者快速搭建高效的开发环境。当前版本主要提供全局配置（如 settings.json 和 keybindings.json），并计划在未来扩展支持多种编程语言的个性化配置（如 JavaScript、Python、Java 等）。
 
 本项目的亮点之一是与 VSCode 插件 **SyncFiles** 的无缝配合。SyncFiles 是一个从 GitHub 下载的插件，可以帮助你同步配置文件到多个设备。通过结合 SyncFiles，我们希望为你提供一种简单的方式，将你的 VSCode 配置随时随地带到任何机器上，省去手动配置的麻烦。
 
