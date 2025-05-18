@@ -1,0 +1,64 @@
+{
+   "settings": {
+       "os": {
+           "Windows": {
+               "os": "windows",
+               "bash": "Git Bash",
+               "qt_exe": "C:/Qt/Qt5.9.5/5.9.5/msvc2017_64/bin/designer.exe",
+               "clangdInclude":"C:/vcpkg/installed/x64-win-llvm/include"
+           },
+           "Linux": {
+               "os": "linux",
+               "bash": "bash",
+               "qt_exe": "/opt/Qt5.15.2/5.15.2/gcc_64/bin/designer",
+               "clangdInclude":"/home/vcpkg/installed/x64-win-llvm/include"
+           },
+           "Mac": {
+               "os": "osx",
+               "bash": "bash",
+               "clangdInclude":"/home/vcpkg/installed/x64-win-llvm/include"
+           }
+       }
+   },
+   "c_cpp_properties": {
+       "Windows": {
+           "os": "Win32",
+           "mode": "windows-msvc-x64",
+           "compiler_path": "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.43.34808/bin/Hostx64/x64/cl.exe"
+       },
+       "Linux": {
+           "os": "Linux",
+           "mode": "gcc-x64",
+           "compiler_path": "/usr/bin/gcc"
+       },
+       "Mac": {
+           "os": "macOS",
+           "mode": "clang-x64",
+           "compiler_path": "/usr/bin/clang"
+       }
+   },
+   "launch": {
+       "dynamic": ["exe_name", "exe_path"],
+       "Windows": {
+           "debug_type": "cppvsdbg",
+           "qt_plugins": "C:/Users/sammiler/.conan2/p/b/qt2c11cdd05279f/p/plugins",
+           "qml_path": "C:/Users/sammiler/.conan2/p/b/qt2c11cdd05279f/p/bin",
+           "qml2_path": "C:/Users/sammiler/.conan2/p/b/qt2c11cdd05279f/p/qml",
+           "qt5_natvis": "C:/Users/sammiler/MyFile/My Doc/Visual Studio 2022/Visualizers/qt5.natvis"
+       },
+       "Linux": {
+           "debug_type": "cppdbg",
+           "qt_plugins": "/home/user/.conan2/p/b/qt2c11cdd05279f/p/plugins",
+           "qml_path": "/home/user/.conan2/p/b/qt2c11cdd05279f/p/bin",
+           "qml2_path": "/home/user/.conan2/p/b/qt2c11cdd05279f/p/qml",
+           "qt5_natvis": ""
+       },
+       "Mac": {
+           "debug_type": "cppdbg",
+           "qt_plugins": "/Users/user/.conan2/p/b/qt2c11cdd05279f/p/plugins",
+           "qml_path": "/Users/user/.conan2/p/b/qt2c11cdd05279f/p/bin",
+           "qml2_path": "/Users/user/.conan2/p/b/qt2c11cdd05279f/p/qml",
+           "qt5_natvis": ""
+       }
+   }
+}

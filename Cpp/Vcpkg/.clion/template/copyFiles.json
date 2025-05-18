@@ -1,0 +1,11 @@
+{  "files": [
+    {
+      "name": ".clang-format",
+      "dst": "."
+    },
+    {
+      "name": "qt5.natvis",
+      "dst": "."
+    }
+  ]
+}
