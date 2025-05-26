@@ -1,0 +1,51 @@
+# Top-level default configurations (optional, can be overridden by platforms)
+# sourceUrl: "default_url"
+# targetDir: "default_target"
+# pythonScriptPath: "default_script.py"
+# pythonExecutablePath: "python"
+# envVariables:
+#   DEFAULT_ENV: "true"
+# watchEntries: # Default watch entries, if any
+#   - watchedPath: "src/default"
+#     onEventScript: "scripts/default_handler.py"
+
+platforms:
+  windows:
+    sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.clion"
+    targetDir: "$PROJECT_DIR$/.clion" # 使用我们之前讨论的 targetDir
+    envVariables: # 这是一个 map (键值对集合)
+      PROJECT_DIR: "$PROJECT_DIR$" # 使用占位符
+      SYSTEM_TYPE: "Windows"
+    pythonScriptPath: "$PROJECT_DIR$/.clion/py-script"
+    pythonExecutablePath: "$USER_HOME$/.pyenv/pyenv-win/versions/3.13.2/python.exe" # 或者一个更通用的路径/占位符
+    watchEntries: # 这是一个列表 (sequence)
+      - watchedPath: "build/build.ninja" # 第一个 watch entry (map)
+        onEventScript: "$PROJECT_DIR$/.clion/py-script/ModifyNinjaConfig.py"
+      - watchedPath: "build/compile_commands.json" # 第二个 watch entry (map)
+        onEventScript: "$PROJECT_DIR$/.clion/py-script/ModifyCompileCommand.py"
+  linux:
+    sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.clion"
+    targetDir: "$PROJECT_DIR$/.clion"
+    envVariables:
+      PROJECT_DIR: "$PROJECT_DIR$"
+      SYSTEM_TYPE: "Linux"
+    pythonScriptPath: "$PROJECT_DIR$/.clion/py-script"
+    pythonExecutablePath: "/usr/bin/python3"
+    watchEntries: # 这是一个列表 (sequence)
+      - watchedPath: "build/build.ninja" # 第一个 watch entry (map)
+        onEventScript: "$PROJECT_DIR$/.clion/py-script/ModifyNinjaConfig.py"
+      - watchedPath: "build/compile_commands.json" # 第二个 watch entry (map)
+        onEventScript: "$PROJECT_DIR$/.clion/py-script/ModifyCompileCommand.py"
+  macos:
+    sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.clion"
+    targetDir: "$PROJECT_DIR$/.clion"
+    envVariables:
+      PROJECT_DIR: "$PROJECT_DIR$"
+      SYSTEM_TYPE: "MacOS"
+    pythonScriptPath: "$PROJECT_DIR$/.clion/py-script"
+    pythonExecutablePath: "/usr/local/bin/python3" 
+    watchEntries: # 这是一个列表 (sequence)
+      - watchedPath: "build/build.ninja" # 第一个 watch entry (map)
+        onEventScript: "$PROJECT_DIR$/.clion/py-script/ModifyNinjaConfig.py"
+      - watchedPath: "build/compile_commands.json" # 第二个 watch entry (map)
+        onEventScript: "$PROJECT_DIR$/.clion/py-script/ModifyCompileCommand.py"
