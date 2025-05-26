@@ -19,9 +19,9 @@ def log_message_to_file(log_file, message_prefix, event_type, file_path_affected
     # if additional_info:
     #     log_entry += f", Info='{additional_info}'"
     # log_entry += "\n"
-    #
+    
     # print(log_entry.strip()) # 总是打印到 stdout/stderr，方便直接查看
-    #
+
     # try:
     #     with open(log_file, "a", encoding="utf-8") as f:
     #         f.write(log_entry)
