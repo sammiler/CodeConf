@@ -13,6 +13,9 @@ platforms:
   windows:
     sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
     targetDir: ".vscode" # 使用我们之前讨论的 targetDir
+    mappings: # <--- 新增的 mappings 示例
+      - sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
+        targetPath: ".vscode" # 目标路径
     envVariables: # 这是一个 map (键值对集合)
       PROJECT_DIR: "." # 使用占位符
       SYSTEM_TYPE: "Windows"
@@ -26,6 +29,9 @@ platforms:
   linux:
     sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
     targetDir: ".vscode"
+    mappings: # <--- 新增的 mappings 示例
+      - sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
+        targetPath: ".vscode" # 目标路径
     envVariables:
       PROJECT_DIR: "."
       SYSTEM_TYPE: "Linux"
@@ -39,6 +45,9 @@ platforms:
   macos:
     sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
     targetDir: ".vscode"
+    mappings: # <--- 新增的 mappings 示例
+      - sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
+        targetPath: ".vscode" # 目标路径
     envVariables:
       PROJECT_DIR: "."
       SYSTEM_TYPE: "MacOS"
