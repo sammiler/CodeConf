@@ -180,27 +180,15 @@ class PresetGenerator:
         }
 
     def add_configure_presets(self):
-        # global arch_value, arch_strategy, tool_strategy, tool_value # These were not consistently used or set as instance/class vars
-        current_architecture_vars = {} # Define locally or pass if needed by other methods
-        current_toolset_vars = {}    # Define locally or pass
-
+        global arch_value, arch_strategy, tool_strategy, tool_value
         self.presets["configurePresets"] = []
         for platform_spec in self.template_data.get("platform", []):
             os_name_template = platform_spec.get("os")
             if not os_name_template: continue
-
-            # Standardized naming from previous correction
-            if os_name_template == "Darwin":
-                os_preset_name_part = "mac"; display_os_name = "macOS"
-            elif os_name_template == "Windows":
-                os_preset_name_part = "windows"; display_os_name = "Windows"
-            elif os_name_template == "Linux":
-                os_preset_name_part = "linux"; display_os_name = "Linux"
-            else:
-                os_preset_name_part = os_name_template.lower().replace(" ", "-"); display_os_name = os_name_template
-
+            os_preset_name_part = os_name_template.lower()
+            display_os_name = os_name_template
+            if os_name_template == "Darwin": os_preset_name_part, display_os_name = "mac", "macOS"
             base_preset_name = f"{os_preset_name_part}-base"
-
             current_cache_vars = {
                 "CMAKE_C_COMPILER": platform_spec.get("C_COMPILER"),
                 "CMAKE_CXX_COMPILER": platform_spec.get("CXX_COMPILER"),
@@ -208,59 +196,76 @@ class PresetGenerator:
                 "CMAKE_TOOLCHAIN_FILE": platform_spec.get("toolchain"),
                 "VCPKG_TARGET_TRIPLET": platform_spec.get("triplet")
             }
-
-            # Architecture and Toolset (Specific to your original logic for non-Ninja on Windows)
-            # These were declared global in your code, but should ideally be instance or local vars.
-            # For simplicity, re-evaluating them here if needed by the non-Ninja Windows path.
-            architecture_spec_val = platform_spec.get("architecture", {})
-            toolset_spec_val = platform_spec.get("toolset", {})
-
-            current_architecture_vars = {"value": architecture_spec_val.get("value"), "strategy": architecture_spec_val.get("strategy")}
-            current_toolset_vars = {"value": toolset_spec_val.get("value"), "strategy": toolset_spec_val.get("strategy")}
-
+            architecture_spec = platform_spec.get("architecture")
+            toolset_spec = platform_spec.get("toolset")
+            if architecture_spec and toolset_spec:
+                arch_value = architecture_spec.get("value")
+                arch_strategy = architecture_spec.get("strategy")
+                tool_value = toolset_spec.get("value")
+                tool_strategy = toolset_spec.get("strategy")
+                if tool_value and tool_strategy:
+                    current_toolset_vars = {
+                        "value": toolset_spec.get("value"),
+                        "strategy": toolset_spec.get("strategy")
+                    }
+                if arch_value and arch_strategy:
+                    current_architecture_vars = {
+                        "value": arch_value,
+                        "strategy": arch_strategy
+                    }
 
             if os_name_template == "Windows":
                 if "LINK" in platform_spec: current_cache_vars[CMAKE_VAR_LINKER] = platform_spec["LINK"]
                 if "RC" in platform_spec: current_cache_vars[CMAKE_VAR_RC_COMPILER] = platform_spec["RC"]
                 if "MT" in platform_spec: current_cache_vars[CMAKE_VAR_MT_COMPILER] = platform_spec["MT"]
-
             final_base_cache_vars = current_cache_vars.copy()
             final_base_cache_vars.update(self.global_cmake_options_from_all_workflow_steps)
-
-            base_configure_preset_obj = {
-                "name": base_preset_name, "hidden": True, "displayName": f"{display_os_name} Base",
-                "description": platform_spec.get("description", f"{display_os_name} 的基础配置"),
-                "generator": platform_spec.get("generator", "Ninja"), # Default to Ninja
-                "binaryDir": f"${{sourceDir}}/{DEFAULT_BINARY_DIR_SUFFIX}",
-                "cacheVariables": {k: v for k, v in final_base_cache_vars.items() if v is not None and v != ""},
-            }
-
-            # Your original logic for non-Ninja generator on Windows
-            if os_name_template == "Windows" and platform_spec.get("generator") != "Ninja":
-                if current_architecture_vars.get("value") and current_architecture_vars.get("strategy"):
-                    base_configure_preset_obj["architecture"] = {k: v for k,v in current_architecture_vars.items() if v is not None and v != ""}
-                if current_toolset_vars.get("value") and current_toolset_vars.get("strategy"):
-                    base_configure_preset_obj["toolset"] =  {k: v for k,v in current_toolset_vars.items() if v is not None and v != ""}
-
+            if os_name_template == "Windows":
+                realGenerator = platform_spec.get("generator")
+                if realGenerator == "Ninja":
+                    base_configure_preset_obj = {
+                        "name": base_preset_name, "hidden": True, "displayName": f"{display_os_name} Base",
+                        "description": platform_spec.get("description", f"{display_os_name} 的基础配置"),
+                        "generator": platform_spec.get("generator", "Ninja"),
+                        "binaryDir": f"${{sourceDir}}/{DEFAULT_BINARY_DIR_SUFFIX}",
+                        "cacheVariables": {k: v for k, v in final_base_cache_vars.items() if v is not None and v != ""},
+                    }
+                else:
+                    base_configure_preset_obj = {
+                        "name": base_preset_name, "hidden": True, "displayName": f"{display_os_name} Base",
+                        "description": platform_spec.get("description", f"{display_os_name} 的基础配置"),
+                        "generator": platform_spec.get("generator"),
+                        "binaryDir": f"${{sourceDir}}/{DEFAULT_BINARY_DIR_SUFFIX}",
+                        "architecture": {k: v for k, v in current_architecture_vars.items() if
+                                         v is not None and v != ""},
+                        "toolset": {k: v for k, v in current_toolset_vars.items() if v is not None and v != ""},
+                        "cacheVariables": {k: v for k, v in final_base_cache_vars.items() if v is not None and v != ""},
+                    }
+            else:
+                base_configure_preset_obj = {
+                    "name": base_preset_name, "hidden": True, "displayName": f"{display_os_name} Base",
+                    "description": platform_spec.get("description", f"{display_os_name} 的基础配置"),
+                    "generator": platform_spec.get("generator", "Ninja"),
+                    "binaryDir": f"${{sourceDir}}/{DEFAULT_BINARY_DIR_SUFFIX}",
+                    "cacheVariables": {k: v for k, v in final_base_cache_vars.items() if v is not None and v != ""},
+                }
             self.presets["configurePresets"].append(base_configure_preset_obj)
-
             for build_type in ["debug", "release"]:
                 concrete_config_preset_name = f"{os_preset_name_part}-{build_type}"
                 display_build_type = build_type.capitalize()
                 flags_key = "debug_flag" if build_type == "debug" else "rel_flag"
                 flags = platform_spec.get(flags_key, {})
                 cfg_specific_cache_vars = {"CMAKE_BUILD_TYPE": display_build_type}
-                if flags.get("CMAKE_CXX_FLAGS"): cfg_specific_cache_vars["CMAKE_CXX_FLAGS"] = flags.get("CMAKE_CXX_FLAGS")
+                if flags.get("CMAKE_CXX_FLAGS"): cfg_specific_cache_vars["CMAKE_CXX_FLAGS"] = flags.get(
+                    "CMAKE_CXX_FLAGS")
                 if flags.get("CMAKE_C_FLAGS"): cfg_specific_cache_vars["CMAKE_C_FLAGS"] = flags.get("CMAKE_C_FLAGS")
-
-                # Corrected CMAKE_RUNTIME_OUTPUT_DIRECTORY based on previous discussion
-                cfg_specific_cache_vars["CMAKE_RUNTIME_OUTPUT_DIRECTORY"] = f"${{binaryDir}}/{DEFAULT_RUNTIME_OUTPUT_DIR_SUFFIX}"
-
+                cfg_specific_cache_vars[
+                    "CMAKE_RUNTIME_OUTPUT_DIRECTORY"] = f"${{sourceDir}}/{DEFAULT_RUNTIME_OUTPUT_DIR_SUFFIX}"
                 cfg_preset = {
                     "name": concrete_config_preset_name, "displayName": f"{display_os_name} {display_build_type}",
                     "inherits": base_preset_name,
-                    "condition": {"type": "equals", "lhs": "${hostSystemName}", "rhs": os_name_template}, # Original OS name for condition
-                    # "binaryDir": f"${{sourceDir}}/{DEFAULT_BINARY_DIR_SUFFIX}", # Inherited
+                    "condition": {"type": "equals", "lhs": "${hostSystemName}", "rhs": os_name_template},
+                    "binaryDir": f"${{sourceDir}}/{DEFAULT_BINARY_DIR_SUFFIX}",
                     "cacheVariables": cfg_specific_cache_vars
                 }
                 self.presets["configurePresets"].append(cfg_preset)
@@ -276,37 +281,34 @@ class PresetGenerator:
                             target_name = step_spec.get("target")
                             if target_name:
                                 all_build_step_targets.add(target_name)
-                            # Fallback logic from your original code (can be removed if targets are always present)
-                            else:
+                            else:  # Fallback (not recommended, template should provide "target")
                                 desc = step_spec.get("description", "").lower()
-                                if "clang-format" in desc and "check" not in desc: all_build_step_targets.add("clang-format")
-                                elif "clang-format-check" in desc: all_build_step_targets.add("clang-format-check")
+                                if "clang-format" in desc and "check" not in desc:
+                                    all_build_step_targets.add("clang-format")
+                                elif "clang-format-check" in desc:
+                                    all_build_step_targets.add("clang-format-check")
 
         for platform_spec in self.template_data.get("platform", []):
             os_name_template = platform_spec.get("os")
             if not os_name_template: continue
-
+            os_preset_name_part = os_name_template.lower()
+            display_os_name = os_name_template
             if os_name_template == "Darwin": os_preset_name_part, display_os_name = "mac", "macOS"
-            elif os_name_template == "Windows": os_preset_name_part = "windows"; display_os_name = "Windows"
-            elif os_name_template == "Linux": os_preset_name_part = "linux"; display_os_name = "Linux"
-            else: os_preset_name_part = os_name_template.lower().replace(" ", "-"); display_os_name = os_name_template
-
 
             for build_type_suffix in ["debug", "release"]:
-                configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix}" # e.g., mac-debug
+                configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix}"
                 display_build_type_name = build_type_suffix.capitalize()
-
+                # Main build preset
                 self.presets["buildPresets"].append({
-                    "name": f"build-{configure_preset_ref}", # e.g., build-mac-debug
-                    "configurePreset": configure_preset_ref,
-                    "jobs": DEFAULT_BUILD_JOBS,
+                    "name": f"build-{configure_preset_ref}",
+                    "configurePreset": configure_preset_ref, "jobs": DEFAULT_BUILD_JOBS,
                     "displayName": f"构建主项目 ({display_os_name} {display_build_type_name})"
                 })
+                # Build presets for specific targets collected from template
                 for target_name in all_build_step_targets:
-                    build_preset_name = f"build-{configure_preset_ref}-{target_name.replace(' ', '-').replace('_', '-').lower()}" # Sanitize target name for preset name
+                    build_preset_name = f"build-{configure_preset_ref}-{target_name.replace(' ', '-').lower()}"
                     self.presets["buildPresets"].append({
-                        "name": build_preset_name,
-                        "targets": [target_name],
+                        "name": build_preset_name, "targets": [target_name],
                         "configurePreset": configure_preset_ref,
                         "displayName": f"构建目标 '{target_name}' ({display_os_name} {display_build_type_name})"
                     })
@@ -325,33 +327,37 @@ class PresetGenerator:
         for platform_spec in self.template_data.get("platform", []):
             os_name_template = platform_spec.get("os")
             if not os_name_template: continue
-
+            os_preset_name_part = os_name_template.lower()
+            display_os_name = os_name_template
             if os_name_template == "Darwin": os_preset_name_part, display_os_name = "mac", "macOS"
-            elif os_name_template == "Windows": os_preset_name_part = "windows"; display_os_name = "Windows"
-            elif os_name_template == "Linux": os_preset_name_part = "linux"; display_os_name = "Linux"
-            else: os_preset_name_part = os_name_template.lower().replace(" ", "-"); display_os_name = os_name_template
 
-            for build_type_suffix_for_tests in ["debug", "release"]:
-                is_test_preset_needed = any(
-                    build_type_suffix_for_tests in step.get("args", {}).get("apply_to_build_types", ["debug", "release"]) # Default to both if not specified
-                    for step in all_template_test_steps
-                )
-                if not is_test_preset_needed: continue
+            for build_type_suffix_for_tests in ["debug", "release"]:  # Iterate for both build types
+                is_test_preset_needed_for_this_build_type = False
+                for step_spec in all_template_test_steps:
+                    # Check if any test step applies to the current build_type_suffix_for_tests
+                    if build_type_suffix_for_tests in step_spec.get("args", {}).get("apply_to_build_types", ["debug"]):
+                        is_test_preset_needed_for_this_build_type = True;
+                        break
+                if not is_test_preset_needed_for_this_build_type: continue
 
-                configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix_for_tests}" # e.g. mac-debug
-                # Your original logic for base_test_preset_name_for_type, adapted for clarity
-                test_preset_name = f"{os_preset_name_part}-{build_type_suffix_for_tests}-tests" # e.g. mac-debug-tests
+                configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix_for_tests}"
+                base_test_preset_name_for_type = f"{os_preset_name_part}-{build_type_suffix_for_tests}-tests"
 
-                # Check if this exact test preset name was already added (it shouldn't if logic is per platform-build_type combo)
-                if not any(tp["name"] == test_preset_name for tp in self.presets.get("testPresets", [])):
-                    self.presets["testPresets"].append({
-                        "name": test_preset_name,
+                current_base_test_preset_obj = None
+                # Ensure base test preset for this type (debug/release) is added only once
+                if not any(tp["name"] == base_test_preset_name_for_type for tp in self.presets.get("testPresets", [])):
+                    current_base_test_preset_obj = {
+                        "name": base_test_preset_name_for_type,
                         "displayName": f"运行测试 ({display_os_name} {build_type_suffix_for_tests.capitalize()})",
                         "configurePreset": configure_preset_ref,
                         "configuration": build_type_suffix_for_tests.capitalize(),
                         "output": {"outputOnFailure": True, "verbosity": "default"},
                         "execution": {"jobs": 1, "timeout": DEFAULT_TEST_TIMEOUT}
-                    })
+                    }
+                    self.presets["testPresets"].append(current_base_test_preset_obj)
+                else:
+                    current_base_test_preset_obj = next(
+                        tp for tp in self.presets["testPresets"] if tp["name"] == base_test_preset_name_for_type)
 
     def add_workflow_presets(self):
         self.presets["workflowPresets"] = []
@@ -361,67 +367,99 @@ class PresetGenerator:
         for platform_spec in self.template_data.get("platform", []):
             os_name_template = platform_spec.get("os")
             if not os_name_template: continue
-
+            os_preset_name_part = os_name_template.lower()
+            display_os_name = os_name_template
             if os_name_template == "Darwin": os_preset_name_part, display_os_name = "mac", "macOS"
-            elif os_name_template == "Windows": os_preset_name_part = "windows"; display_os_name = "Windows"
-            elif os_name_template == "Linux": os_preset_name_part = "linux"; display_os_name = "Linux"
-            else: os_preset_name_part = os_name_template.lower().replace(" ", "-"); display_os_name = os_name_template
 
-
-            for build_type_suffix in ["debug", "release"]:
-                base_configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix}" # e.g. mac-debug
+            for build_type_suffix in ["debug", "release"]:  # Iterate for both build types
+                base_configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix}"
                 display_build_type_name = build_type_suffix.capitalize()
-                main_build_preset_ref = f"build-{base_configure_preset_ref}" # e.g. build-mac-debug
+                main_build_preset_ref = f"build-{base_configure_preset_ref}"
 
                 for workflow_group in template_workflow_groups:
-                    for template_wf_concept_name, template_steps_list in workflow_group.items(): # e.g. "Flow": [...]
+                    for template_wf_concept_name, template_steps_list in workflow_group.items():
                         if not isinstance(template_steps_list, list): continue
 
                         workflow_preset_name = f"{os_preset_name_part}-{build_type_suffix}-workflow-{template_wf_concept_name.replace(' ', '-').lower()}"
-                        current_workflow_actual_steps = [{"type": "configure", "name": base_configure_preset_ref}]
 
+                        configure_step = {"type": "configure", "name": base_configure_preset_ref}
+                        current_workflow_actual_steps = [configure_step]
+
+                        # Add optional "build" type pre-steps
                         for step_spec in template_steps_list:
                             step_type = step_spec.get("type")
-                            step_options = step_spec.get("option", {})
-                            # Original logic for execute_this_step based on options
-                            execute_this_step = all(self._cmake_bool_value(opt_val) == "ON" for _, opt_val in step_options.items()) if step_options else True
-                            if not execute_this_step: continue
-
                             if step_type == "build":
+                                step_options = step_spec.get("option", {})
+                                execute_this_step = True
+                                for option_key, option_template_value in step_options.items():
+                                    if self._cmake_bool_value(option_template_value) == "OFF":
+                                        execute_this_step = False;
+                                        break
+                                if not execute_this_step: continue
+
                                 cmake_target_name = step_spec.get("target")
-                                # Fallback for target name from your original code
                                 if not cmake_target_name:
                                     desc_lower = step_spec.get("description", "").lower()
-                                    if "clang-format" in desc_lower and "check" not in desc_lower: cmake_target_name = "clang-format"
-                                    elif "clang-format-check" in desc_lower: cmake_target_name = "clang-format-check"
+                                    if "clang-format" in desc_lower and "check" not in desc_lower:
+                                        cmake_target_name = "clang-format"
+                                    elif "clang-format-check" in desc_lower:
+                                        cmake_target_name = "clang-format-check"
 
                                 if cmake_target_name:
-                                    build_preset_for_step = f"build-{base_configure_preset_ref}-{cmake_target_name.replace(' ', '-').replace('_', '-').lower()}"
-                                    if any(bp["name"] == build_preset_for_step for bp in self.presets.get("buildPresets", [])):
-                                        current_workflow_actual_steps.append({"type": "build", "name": build_preset_for_step})
-                                    # else: print(f"警告: WF '{workflow_preset_name}' step '{step_spec.get('description')}' build preset '{build_preset_for_step}' not found.")
-                                # else: print(f"警告: WF '{workflow_preset_name}' step '{step_spec.get('description')}' missing target.")
+                                    build_preset_for_step = f"build-{base_configure_preset_ref}-{cmake_target_name.replace(' ', '-').lower()}"
+                                    if any(bp["name"] == build_preset_for_step for bp in
+                                           self.presets.get("buildPresets", [])):
+                                        current_workflow_actual_steps.append(
+                                            {"type": "build", "name": build_preset_for_step})
+                                    else:
+                                        print(
+                                            f"警告: 前置构建步骤 '{step_spec.get('description')}' 在工作流 '{workflow_preset_name}' 中找不到对应构建预设 '{build_preset_for_step}'。")
+                                else:
+                                    print(
+                                        f"警告: 工作流 '{workflow_preset_name}' 的构建步骤 '{step_spec.get('description')}' 未能确定 CMake 目标名称。")
 
-                            elif step_type == "test":
-                                step_args = step_spec.get("args", {})
-                                applicable_build_types = step_args.get("apply_to_build_types", ["debug", "release"])
-                                if build_type_suffix in applicable_build_types:
-                                    test_preset_ref = f"{os_preset_name_part}-{build_type_suffix}-tests" # e.g. mac-debug-tests
-                                    # Your original logic for launcher_test_preset_suffix (simplified here)
-                                    # if step_args.get("use_launcher"):
-                                    #     launcher_suffix = step_args.get("launcher_test_preset_suffix", f"-{step_spec.get('description','launcher').replace(' ','-').lower()}")
-                                    #     test_preset_ref += launcher_suffix
-
-                                    if any(tp["name"] == test_preset_ref for tp in self.presets.get("testPresets", [])):
-                                        current_workflow_actual_steps.append({"type": "test", "name": test_preset_ref})
-                                    # else: print(f"警告: WF '{workflow_preset_name}' step '{step_spec.get('description')}' test preset '{test_preset_ref}' not found.")
-
-                        # Add main build step after specific target builds
+                        # Add main build step
                         if any(bp["name"] == main_build_preset_ref for bp in self.presets.get("buildPresets", [])):
                             current_workflow_actual_steps.append({"type": "build", "name": main_build_preset_ref})
-                        # else: print(f"警告: WF '{workflow_preset_name}' missing main build preset '{main_build_preset_ref}'.")
+                        else:
+                            print(f"严重警告: 主构建预设 '{main_build_preset_ref}' 未找到！")
 
-                        if len(current_workflow_actual_steps) > 1: # Has more than just configure
+                        # Add optional "test" type post-steps
+                        for step_spec in template_steps_list:
+                            step_type = step_spec.get("type")
+                            if step_type == "test":
+                                step_options = step_spec.get("option", {})
+                                execute_this_step = True
+                                for option_key, option_template_value in step_options.items():
+                                    if self._cmake_bool_value(option_template_value) == "OFF":
+                                        execute_this_step = False;
+                                        break
+                                if not execute_this_step: continue
+
+                                step_args = step_spec.get("args", {})
+                                applicable_build_types = step_args.get("apply_to_build_types", ["debug"])
+
+                                if build_type_suffix in applicable_build_types:
+                                    test_preset_base_name_for_current_type = f"{os_preset_name_part}-{build_type_suffix}-tests"
+                                    test_preset_to_ref = test_preset_base_name_for_current_type
+
+                                    if step_args.get("use_launcher"):
+                                        suffix = step_args.get("launcher_test_preset_suffix")
+                                        if not suffix: suffix = "-" + step_spec.get("description", "launcher").replace(
+                                            ' ', '-').lower()
+                                        test_preset_to_ref = f"{test_preset_base_name_for_current_type}{suffix}"
+
+                                    if any(tp["name"] == test_preset_to_ref for tp in
+                                           self.presets.get("testPresets", [])):
+                                        current_workflow_actual_steps.append(
+                                            {"type": "test", "name": test_preset_to_ref})
+                                    else:
+                                        print(
+                                            f"警告: 测试步骤 '{step_spec.get('description')}' 在工作流 '{workflow_preset_name}' 中尝试引用测试预设 '{test_preset_to_ref}' 但未找到。")
+
+                        has_action_step = any(
+                            s.get("type") in ["build", "test"] for s in current_workflow_actual_steps[1:])
+                        if has_action_step:
                             self.presets["workflowPresets"].append({
                                 "name": workflow_preset_name,
                                 "displayName": f"工作流: {template_wf_concept_name} ({display_os_name} {display_build_type_name})",
