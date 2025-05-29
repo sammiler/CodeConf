@@ -1,0 +1,27 @@
+# Top-level default configurations (optional, can be overridden by platforms)
+# sourceUrl: "default_url"
+# targetDir: "default_target"
+# pythonScriptPath: "default_script.py"
+# pythonExecutablePath: "python"
+# envVariables:
+#   DEFAULT_ENV: "true"
+# watchEntries: # Default watch entries, if any
+#   - watchedPath: "src/default"
+#     onEventScript: "scripts/default_handler.py"
+
+SyncFiles:
+    sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
+    targetDir: ".vs" # 使用我们之前讨论的 targetDir
+    mappings: # <--- 新增的 mappings 示例
+      - sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
+        targetPath: ".vs" # 目标路径
+    envVariables: # 这是一个 map (键值对集合)
+      PROJECT_DIR: "." # 使用占位符
+      SYSTEM_TYPE: "Windows"
+    pythonScriptPath: ".vs/py-script"
+    pythonExecutablePath: "C:/Users/sammiler/.pyenv/pyenv-win/versions/3.13.2/python.exe" # 或者一个更通用的路径/占位符
+    watchEntries: # 这是一个列表 (sequence)
+      - watchedPath: "build/build.ninja" # 第一个 watch entry (map)
+        onEventScript: ".vs/py-script/ModifyNinjaConfig.py"
+      - watchedPath: "build/compile_commands.json" # 第二个 watch entry (map)
+        onEventScript: ".vs/py-script/ModifyCompileCommand.py"
