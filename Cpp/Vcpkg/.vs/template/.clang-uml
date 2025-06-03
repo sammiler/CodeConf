@@ -1,0 +1,66 @@
+compilation_database_dir: "build"
+output_directory: "uml_docs"
+
+diagrams:
+  olive_module_overview: # 给图表一个更明确的名称
+    type: "package"
+    glob: # clang-uml will parse these files to find relationships
+      - "app/**/*.h"  # 推荐使用 ** 匹配多级子目录
+      - "app/**/*.cpp"
+    package_type: "directory" # Treats directories as packages
+    include: # <--- This is key for controlling what packages are shown
+      paths: # Specifies which directories (packages) to include in the diagram
+        - "app/audio"
+        - "app/cli"
+        - "app/codec"
+        - "app/common"
+        - "app/config"
+        - "app/dialog"
+        - "app/node"
+        - "app/panel"
+        - "app/render"
+        - "app/task"
+        - "app/timeline"
+        - "app/tool"
+        - "app/ui"
+        - "app/undo"
+        - "app/widget"
+        - "app/window"
+
+
+  kddockwidgets_class:
+    type: "class"
+
+    glob:
+      - "ext/KDDockWidgets/src/**/*.h"
+      - "ext/KDDockWidgets/src/**/*.cpp"
+    include:
+      relationships:
+        - inheritance 
+      namespaces:
+        - "KDDockWidgets" 
+        - "KDAB"
+
+    plantuml:
+      before:
+        - "title KDDockWidgets 继承关系图 (使用 compile_commands.json, 隐藏成员)"
+        - "hide empty members"
+        - "hide members"       
+
+  olive_class:
+    type: "class"
+
+    glob:
+      - "app/**/*.h"
+      - "app/**/*.cpp"
+    include:
+      relationships:
+        - inheritance 
+      namespaces:
+        - "Olive" 
+
+    plantuml:
+      before:
+        - "title KDDockWidgets 继承关系图 (使用 compile_commands.json, 隐藏成员)"
+        - "hide empty members"
+        - "hide members"      

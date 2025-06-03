@@ -1,0 +1,1 @@
+call  "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64 -vcvars_ver=14.16
