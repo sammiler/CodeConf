@@ -10,10 +10,10 @@
 #     onEventScript: "scripts/default_handler.py"
 
 SyncFiles:
-    sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
+    sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vs"
     targetDir: ".mvs" # 使用我们之前讨论的 targetDir
     mappings: # <--- 新增的 mappings 示例
-      - sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vscode"
+      - sourceUrl: "https://github.com/sammiler/CodeConf/tree/main/Cpp/Vcpkg/.vs"
         targetPath: ".mvs" # 目标路径
     envVariables: # 这是一个 map (键值对集合)
       PROJECT_DIR: "." # 使用占位符
