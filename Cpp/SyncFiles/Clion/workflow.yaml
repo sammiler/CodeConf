@@ -17,7 +17,7 @@ platforms:
       PROJECT_DIR: "$PROJECT_DIR$" # 使用占位符
       SYSTEM_TYPE: "Windows"
     pythonScriptPath: "$PROJECT_DIR$/.clion/py-script"
-    pythonExecutablePath: "$USER_HOME$/.pyenv/pyenv-win/versions/3.13.2/python.exe" # 或者一个更通用的路径/占位符
+    pythonExecutablePath: "C:/Users/sammi/AppData/Local/Programs/Python/Python312/python.exe" # 或者一个更通用的路径/占位符
     watchEntries: # 这是一个列表 (sequence)
       - watchedPath: "build/build.ninja" # 第一个 watch entry (map)
         onEventScript: "$PROJECT_DIR$/.clion/py-script/ModifyNinjaConfig.py"
