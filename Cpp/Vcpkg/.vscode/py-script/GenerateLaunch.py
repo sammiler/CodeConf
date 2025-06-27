@@ -27,6 +27,25 @@ def print_config_item(key, value_str): print(f"  {key}: {YELLOW}{value_str}{RESE
 # --- 默认 Launch 配置相关 ---
 DEFAULT_LAUNCH_VERSION = "0.2.0"
 
+# ⬇️⬇️⬇️ 1. 在这里定义我们固定的 Python Attach 配置 ⬇️⬇️⬇️
+FIXED_PYTHON_ATTACH_CONFIG = OrderedDict([
+    ("name", "Python: Attach to C++ Process"),
+    ("type", "debugpy"),
+    ("request", "attach"),
+    ("connect", OrderedDict([
+        ("host", "127.0.0.1"),
+        ("port", 5678)
+    ])),
+    ("justMyCode", False),
+    ("pathMappings", [
+        OrderedDict([
+            ("localRoot", "${workspaceFolder}"),
+            ("remoteRoot", "${workspaceFolder}")
+        ])
+    ])
+])
+# ⬆️⬆️⬆️ 1. 定义完毕 ⬆️⬆️⬆️
+
 EDITABLE_LAUNCH_KEYS = OrderedDict([
     ("name", "配置名称"),
     ("type", "调试器类型 (e.g., cppvsdbg, cppdbg)"),
@@ -60,7 +79,6 @@ class InteractiveLaunchConfigGenerator:
         self.current_os_platform = platform.system()
         print_info(f"当前检测到的操作系统: {self.current_os_platform}")
 
-    # +++ 添加 _save_to_file 方法 +++
     def _save_to_file(self, data_to_save: OrderedDict, filename: str = "launch.json"):
         """将数据保存到 .vscode 目录下的指定文件。"""
         output_path = self.vscode_dir / filename
@@ -72,7 +90,6 @@ class InteractiveLaunchConfigGenerator:
             print_success(f"配置已成功保存到: {output_path}")
         except Exception as e:
             print_error(f"保存文件 '{output_path}' 失败: {e}")
-    # ++++++++++++++++++++++++++++++++
 
     def _get_platform_specific_default_type(self) -> str:
         if self.current_os_platform == "Windows":
@@ -145,7 +162,7 @@ class InteractiveLaunchConfigGenerator:
                     default_block["MIMode"] = "gdb" 
                     default_block["miDebuggerPath"] = "/usr/bin/gdb" 
                     default_block["setupCommands"] = [
-                        OrderedDict([ # 使用 OrderedDict 保证内部顺序
+                        OrderedDict([
                             ("description", "Enable pretty-printing for gdb"),
                             ("text", "-enable-pretty-printing"),
                             ("ignoreFailures", True)
@@ -156,13 +173,10 @@ class InteractiveLaunchConfigGenerator:
         self.generated_launch_configs = new_launch_configs
         print_success(f"已为扫描到的文件生成/更新 {len(self.generated_launch_configs)} 条内存中的启动配置。")
 
-
     def _edit_list_or_obj_property(self, current_value_ref, prop_name: str, is_env_list: bool = False):
-        # 直接修改传入的引用 current_value_ref (它应该是 block_to_edit[key_to_edit])
         temp_data = copy.deepcopy(current_value_ref) 
         
         print_menu_header(f"编辑 '{prop_name}' (复杂结构)")
-        # ... (省略了这部分内部逻辑，与前一版本相同，确保它修改 temp_data)
         if is_env_list and isinstance(temp_data, list):
              while True:
                 print_info("\nEnvironment 变量列表:")
@@ -188,12 +202,8 @@ class InteractiveLaunchConfigGenerator:
                         else: print_error("无效编号")
                     except ValueError: print_error("输入数字")
                 elif choice == 'c': 
-                    # 应用更改到原始引用
-                    if isinstance(current_value_ref, list):
-                        current_value_ref[:] = temp_data 
-                    elif isinstance(current_value_ref, dict):
-                        current_value_ref.clear()
-                        current_value_ref.update(temp_data)
+                    if isinstance(current_value_ref, list): current_value_ref[:] = temp_data 
+                    elif isinstance(current_value_ref, dict): current_value_ref.clear(); current_value_ref.update(temp_data)
                     print_success("Environment已更新"); break
                 elif choice == 'd': print_info("Environment更改已放弃"); break
                 else: print_error("无效选择")
@@ -206,17 +216,15 @@ class InteractiveLaunchConfigGenerator:
                 print_info("请粘贴新的JSON内容。多行输入，结束后输入'EOF'然后回车。")
                 new_json_lines = []
                 while True:
-                    line = sys.stdin.readline().rstrip('\n') # 使用 sys.stdin.readline
+                    line = sys.stdin.readline().rstrip('\n')
                     if line.strip().upper() == 'EOF': break
                     new_json_lines.append(line)
                 new_json_str = "\n".join(new_json_lines)
                 try:
                     new_data_from_json = json.loads(new_json_str, object_pairs_hook=OrderedDict)
-                    # 应用更改到原始引用
                     if isinstance(current_value_ref, list): current_value_ref[:] = new_data_from_json
                     elif isinstance(current_value_ref, dict): current_value_ref.clear(); current_value_ref.update(new_data_from_json)
-                    else: # Should not happen if current_value_ref was a list/dict
-                          print_error("内部错误：尝试修改非容器类型的复杂属性。")
+                    else: print_error("内部错误：尝试修改非容器类型的复杂属性。")
                     print_success(f"'{prop_name}' 已通过JSON更新。")
                 except json.JSONDecodeError:
                     print_error("无效的JSON格式，未更新。")
@@ -252,7 +260,7 @@ class InteractiveLaunchConfigGenerator:
             if current_page > 0: print_option("p", "上一页")
             if end_index < len(self.generated_launch_configs): print_option("n", "下一页")
             print_option("s", "重新扫描 (当前目录: '" + self.executables_dir_rel + "')")
-            if page_items: # 只有当前页有项目时才显示删除和编辑
+            if page_items:
                 print_option("d", "删除一个配置 (从当前页选择)")
                 print_option("e", "编辑一个配置 (从当前页选择)")
             print_option("b", "完成管理并返回主菜单")
@@ -262,7 +270,7 @@ class InteractiveLaunchConfigGenerator:
             if choice == 'b': break
             elif choice == 'p' and current_page > 0: current_page -= 1
             elif choice == 'n' and end_index < len(self.generated_launch_configs): current_page += 1
-            elif choice == 's': self.set_executables_directory_and_scan(); current_page = 0 # 扫描后重置到第一页
+            elif choice == 's': self.set_executables_directory_and_scan(); current_page = 0
             elif choice == 'd' and page_items:
                 try:
                     num_on_page_str = input(f"{BLUE}输入当前页上要删除配置的编号: {RESET}").strip()
@@ -289,8 +297,6 @@ class InteractiveLaunchConfigGenerator:
                 except ValueError: print_error("请输入有效的数字编号。" if choice == 'e' else "无效输入。")
             else:
                 print_error("无效输入。")
-            # input(f"{BLUE}按回车键继续...{RESET}") # 放在循环末尾或特定操作后
-
 
     def _edit_single_launch_config_block(self, block_index_in_memory: int):
         if not (0 <= block_index_in_memory < len(self.generated_launch_configs)):
@@ -305,8 +311,6 @@ class InteractiveLaunchConfigGenerator:
             editable_fields_for_menu = list(EDITABLE_LAUNCH_KEYS.items())
 
             for i, (key, desc) in enumerate(editable_fields_for_menu):
-                # 只显示块中实际存在的、且在EDITABLE_LAUNCH_KEYS中的键，或者所有EDITABLE_LAUNCH_KEYS中的键
-                # 为了简单，我们显示所有EDITABLE_LAUNCH_KEYS，如果块中没有则显示"未设置"
                 current_val = block_to_edit.get(key)
                 preview_str = ""
                 if isinstance(current_val, list): preview_str = f"列表 (共 {len(current_val)} 项)"
@@ -326,29 +330,27 @@ class InteractiveLaunchConfigGenerator:
                     print_error("无效的属性编号。"); continue
 
                 key_to_edit, desc_of_key = editable_fields_for_menu[selected_attr_idx]
-                # 确保操作的是 block_to_edit[key_to_edit] 的引用 (对于列表/字典)
-                # 或直接修改 block_to_edit[key_to_edit] (对于简单类型)
                 
                 print_info(f"\n--- 正在编辑 '{block_name_display}' 的 '{desc_of_key}' ---")
 
                 if key_to_edit == "environment":
                     if key_to_edit not in block_to_edit or not isinstance(block_to_edit[key_to_edit], list):
-                        block_to_edit[key_to_edit] = [] # 初始化
+                        block_to_edit[key_to_edit] = []
                     self._edit_list_or_obj_property(block_to_edit[key_to_edit], desc_of_key, is_env_list=True)
                 elif key_to_edit in ["logging", "sourceFileMap", "setupCommands"]: 
                     if key_to_edit not in block_to_edit or not isinstance(block_to_edit[key_to_edit], (dict, list)):
                          block_to_edit[key_to_edit] = OrderedDict() if key_to_edit != "setupCommands" else []
                     self._edit_list_or_obj_property(block_to_edit[key_to_edit], desc_of_key)
                 elif key_to_edit == "stopAtEntry":
-                    current_value = block_to_edit.get(key_to_edit, True) # 默认为True如果不存在
+                    current_value = block_to_edit.get(key_to_edit, True)
                     current_bool_val_str = str(current_value).lower()
                     new_val_str = input(f"{BLUE}输入新值 ('true'/'false') [当前: {current_bool_val_str}, 回车保留]: {RESET}").strip().lower()
                     if new_val_str == "true": block_to_edit[key_to_edit] = True; print_success("已更新。")
                     elif new_val_str == "false": block_to_edit[key_to_edit] = False; print_success("已更新。")
-                    elif new_val_str == "" : pass # 保留
+                    elif new_val_str == "" : pass
                     else: print_warning("无效输入或未更改。")
                 else: 
-                    current_value = block_to_edit.get(key_to_edit, "") # 默认为空字符串如果不存在
+                    current_value = block_to_edit.get(key_to_edit, "")
                     current_str_val = str(current_value)
                     new_val = input(f"{BLUE}输入新值 [当前: '{current_str_val}', 回车保留]: {RESET}").strip()
                     if new_val or (new_val == "" and current_value is not None): 
@@ -357,7 +359,6 @@ class InteractiveLaunchConfigGenerator:
                             print_success("已更新。")
                 input(f"{BLUE}按回车键继续...{RESET}")
             except ValueError: print_error("请输入有效的数字编号。")
-
 
     def set_executables_directory_and_scan(self):
         print_menu_header("设置可执行文件目录")
@@ -371,75 +372,75 @@ class InteractiveLaunchConfigGenerator:
         self.scan_executables()
         input(f"{BLUE}按回车键继续...{RESET}")
 
-
+    # ⬇️⬇️⬇️ 2. 修改这个核心方法 ⬇️⬇️⬇️
     def generate_and_save_launch_file(self):
         print_action("准备生成/更新 launch.json 文件")
 
+        # 检查内存中的 C++ 启动配置
         if not self.generated_launch_configs:
-            print_warning("内存中没有已生成/编辑的启动配置。是否要先扫描可执行文件目录？")
+            print_warning("内存中没有已生成的 C++ 启动配置。是否要先扫描可执行文件目录？")
             choice = input(f"{BLUE}扫描可执行文件目录 (当前: '{self.executables_dir_rel}')? (Y/n): {RESET}").strip().lower()
             if choice != 'n':
                 self.scan_executables()
                 if not self.generated_launch_configs:
-                    print_info("扫描后仍无配置，取消生成。")
-                    input(f"\n{BLUE}按回车键返回主菜单...{RESET}")
-                    return
+                    print_info("扫描后仍无 C++ 配置，但仍将继续处理 Python Attach 配置。")
             else:
-                print_info("已取消生成。")
-                input(f"\n{BLUE}按回车键返回主菜单...{RESET}")
-                return
-
+                print_info("已取消扫描。")
+        
+        # 加载现有的 launch.json 文件内容
         file_data = self._load_existing_file_or_default_for_launch()
         existing_configurations_in_file = file_data.get("configurations", [])
         
         final_configurations_for_file = []
+        
+        # --- 阶段 A: 处理内存中的 C++ 配置 (扫描到的/编辑过的) ---
         processed_program_paths_from_file = set()
 
+        # A.1: 更新或追加内存中的配置到最终列表
         for mem_config in self.generated_launch_configs:
             mem_program_path = mem_config.get("program")
             if not mem_program_path: 
                 print_warning(f"内存中发现一个没有 'program' 路径的配置: '{mem_config.get('name', '未命名')}'，已跳过。")
                 continue
-
-            match_found_in_file = False
-            for i, file_config_block in enumerate(existing_configurations_in_file):
-                if isinstance(file_config_block, dict) and file_config_block.get("program") == mem_program_path:
-                    print_info(f"更新文件中已有的配置: '{mem_config.get('name')}' (基于 program path)")
-                    updated_block = copy.deepcopy(file_config_block) 
-                    for key, mem_value in mem_config.items():
-                        updated_block[key] = copy.deepcopy(mem_value) 
-                    final_configurations_for_file.append(updated_block)
-                    processed_program_paths_from_file.add(mem_program_path)
-                    match_found_in_file = True
-                    # 将此块从 existing_configurations_in_file 中标记为已处理（或移除），以简化阶段B
-                    # 为简单起见，我们使用 processed_program_paths_from_file 集合
-                    break 
             
-            if not match_found_in_file:
-                print_info(f"追加新的启动配置到文件: '{mem_config.get('name')}'")
-                final_configurations_for_file.append(copy.deepcopy(mem_config))
+            # 我们直接把内存中的版本作为最新版本加入
+            print_info(f"添加/更新来自内存的 C++ 配置: '{mem_config.get('name')}'")
+            final_configurations_for_file.append(copy.deepcopy(mem_config))
+            processed_program_paths_from_file.add(mem_program_path)
 
+        # A.2: 保留文件中那些未被内存中配置覆盖的用户自定义 C++ 配置
         for file_config_block in existing_configurations_in_file:
-            if isinstance(file_config_block, dict):
+            # 只处理 C++ 相关的配置
+            if isinstance(file_config_block, dict) and file_config_block.get("type") in ["cppvsdbg", "cppdbg"]:
                 file_program_path = file_config_block.get("program")
                 if file_program_path not in processed_program_paths_from_file:
-                    print_info(f"保留文件中用户自定义的启动配置: '{file_config_block.get('name', '未命名')}'")
+                    print_info(f"保留文件中用户自定义的 C++ 配置: '{file_config_block.get('name', '未命名')}'")
                     final_configurations_for_file.append(copy.deepcopy(file_config_block))
-                elif not file_program_path:
-                    is_already_added = any(fc == file_config_block for fc in final_configurations_for_file)
-                    if not is_already_added:
-                        print_info(f"保留文件中无program路径的用户自定义配置: '{file_config_block.get('name', '未命名')}'")
-                        final_configurations_for_file.append(copy.deepcopy(file_config_block))
-            else: 
-                final_configurations_for_file.append(copy.deepcopy(file_config_block))
 
+        # --- 阶段 B: 处理固定的 Python Attach 配置 ---
+        python_attach_config_name = FIXED_PYTHON_ATTACH_CONFIG.get("name")
+        
+        # 查找文件中是否已存在同名的 Python Attach 配置
+        existing_python_attach_in_file = next((c for c in existing_configurations_in_file if isinstance(c, dict) and c.get("name") == python_attach_config_name), None)
+        
+        if existing_python_attach_in_file:
+            # 如果存在，保留文件中的版本，因为用户可能修改过它 (比如端口号)
+            print_info(f"保留文件中已有的 '{python_attach_config_name}' 配置。")
+            final_configurations_for_file.append(copy.deepcopy(existing_python_attach_in_file))
+        else:
+            # 如果不存在，则添加我们预设的默认版本
+            print_info(f"添加新的 '{python_attach_config_name}' 配置到文件。")
+            final_configurations_for_file.append(copy.deepcopy(FIXED_PYTHON_ATTACH_CONFIG))
+
+        # --- 阶段 C: 组合并保存 ---
         file_data_to_save = OrderedDict([
             ("version", DEFAULT_LAUNCH_VERSION),
             ("configurations", final_configurations_for_file)
         ])
 
-        self._save_to_file(file_data_to_save, "launch.json") # 明确指定文件名
+        self._save_to_file(file_data_to_save, "launch.json")
         input(f"\n{BLUE}按回车键返回主菜单...{RESET}")
+    # ⬆️⬆️⬆️ 2. 修改完毕 ⬆️⬆️⬆️
 
     def _load_existing_file_or_default_for_launch(self) -> OrderedDict:
         if not self.launch_file_path.exists():
