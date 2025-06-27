@@ -26,6 +26,7 @@ DEFAULT_BUILD_JOBS = 8
 CMAKE_VAR_LINKER = "CMAKE_LINKER"
 CMAKE_VAR_RC_COMPILER = "CMAKE_RC_COMPILER"
 CMAKE_VAR_MT_COMPILER = "CMAKE_MT"
+DEFAULT_TEST_TIMEOUT = 300
 
 # --- Embedded Source Template Data ---
 INITIAL_SOURCE_TEMPLATE_DATA = {
@@ -43,7 +44,7 @@ INITIAL_SOURCE_TEMPLATE_DATA = {
     "platform": [
         {
             "os": "Windows", "description": "Windows下envPath需要包含CMake所需要的环境", "generator": "Ninja",
-            "CMAKE_CXX_STANDARD": "20", "C_COMPILER": "clang-cl", "CXX_COMPILER": "clang-cl",
+            "CMAKE_CXX_STANDARD": "20", "C_COMPILER": "cl", "CXX_COMPILER": "cl",
             "LINK": "lld-link", "RC": "rc", "MT": "mt", "MC": "mc",
             "architecture": { "value": "x64", "strategy": "set" },
             "toolset": { "value": "ClangCL", "strategy": "set" },
@@ -55,7 +56,11 @@ INITIAL_SOURCE_TEMPLATE_DATA = {
                 "CMAKE_CXX_FLAGS": "/EHsc /W3  /O2 /FS /MD",
                 "CMAKE_C_FLAGS": "/EHsc /W3  /O2 /FS /MD"
             },
-            "toolchain": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake", "triplet": "x64-win-llvm"
+            "relwithdebug_flag": {
+                "CMAKE_CXX_FLAGS": "/EHsc /W3 /Zi /FS /MD /O2 /DNDEBUG",
+                "CMAKE_C_FLAGS": "/EHsc /W3 /Zi /FS /MD /O2 /DNDEBUG"
+            },
+            "toolchain": "C:\\Users\\sammi\\.vcpkg-clion\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake", "triplet": "x64-windows"
         },
         {
             "os": "Linux", "description": "Linux下使用clang和ninja，vcpkg toolchain", "generator": "Ninja",
@@ -65,6 +70,10 @@ INITIAL_SOURCE_TEMPLATE_DATA = {
             },
             "rel_flag": {
                 "CMAKE_CXX_FLAGS": "-O2 -DNDEBUG -fPIC", "CMAKE_C_FLAGS": "-O2 -DNDEBUG -fPIC"
+            },
+            "relwithdebug_flag": {
+                "CMAKE_CXX_FLAGS": "-O2 -g -DNDEBUG",
+                "CMAKE_C_FLAGS": "-O2 -g -DNDEBUG"
             },
             "toolchain": "/home/sammiller/MyFile/vcpkg/scripts/buildsystems/vcpkg.cmake", "triplet": "x64-linux-llvm",
             "envPath": [ "/usr/local/bin", "/usr/bin" ]
@@ -77,6 +86,10 @@ INITIAL_SOURCE_TEMPLATE_DATA = {
             },
             "rel_flag": {
                 "CMAKE_CXX_FLAGS": "-O2 -DNDEBUG -fPIC", "CMAKE_C_FLAGS": "-O2 -DNDEBUG -fPIC"
+            },
+            "relwithdebug_flag": {
+                "CMAKE_CXX_FLAGS": "-O2 -g -DNDEBUG",
+                "CMAKE_C_FLAGS": "-O2 -g -DNDEBUG"
             },
             "toolchain": "/home/sammiller/APP/vcpkg/scripts/buildsystems/vcpkg.cmake", "triplet": "x64-osx-llvm",
             "envPath": [ "/usr/local/bin", "/opt/homebrew/bin" ]
@@ -249,10 +262,15 @@ class PresetGenerator:
                     "cacheVariables": {k: v for k, v in final_base_cache_vars.items() if v is not None and v != ""},
                 }
             self.presets["configurePresets"].append(base_configure_preset_obj)
-            for build_type in ["debug", "release"]:
-                concrete_config_preset_name = f"{os_preset_name_part}-{build_type}"
-                display_build_type = build_type.capitalize()
-                flags_key = "debug_flag" if build_type == "debug" else "rel_flag"
+            for build_type in ["Debug", "Release","RelWithDebInfo"]:
+                concrete_config_preset_name = f"{os_preset_name_part}-{build_type.lower()}"
+                display_build_type = build_type
+                flag_map = {
+                    "debug": "debug_flag",
+                    "release": "release_flag",
+                    "relwithdebinfo": "relwithdebug_flag"
+                }
+                flags_key = flag_map.get(build_type.lower(),"relwithdebug_flag")
                 flags = platform_spec.get(flags_key, {})
                 cfg_specific_cache_vars = {"CMAKE_BUILD_TYPE": display_build_type}
                 if flags.get("CMAKE_CXX_FLAGS"): cfg_specific_cache_vars["CMAKE_CXX_FLAGS"] = flags.get(
@@ -351,7 +369,7 @@ class PresetGenerator:
                         "configurePreset": configure_preset_ref,
                         "configuration": build_type_suffix_for_tests.capitalize(),
                         "output": {"outputOnFailure": True, "verbosity": "default"},
-                        "execution": {"jobs": 1}
+                        "execution": {"jobs": 1, "timeout": DEFAULT_TEST_TIMEOUT}
                     }
                     self.presets["testPresets"].append(current_base_test_preset_obj)
                 else:
