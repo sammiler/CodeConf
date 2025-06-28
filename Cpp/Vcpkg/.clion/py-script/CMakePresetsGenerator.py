@@ -37,7 +37,7 @@ INITIAL_SOURCE_TEMPLATE_DATA = {
                 { "description": "ClangFormat Check", "type": "build", "target": "clang-format-check", "option": { "ENABLE_CLANG_FORMAT_CHECK": True } },
                 { "description": "ClangTidy Export", "type": "build", "target": "clang-tidy-export-all", "option": { "ENABLE_CLANG_TIDY_FIX_EXPORT": False } },
                 { "description": "ClangTidy Apply", "type": "build", "target": "clang-tidy-apply", "option": { "ENABLE_CLANG_TIDY_Apply_EXPORT": False } },
-                { "description": "Standard Unit-Tests", "type": "test", "option": { "BUILD_TESTS": True }, "args": { "apply_to_build_types": ["debug", "release"] } }
+                { "description": "Standard Unit-Tests", "type": "test", "option": { "BUILD_TESTS": True }, "args": { "apply_to_build_types": ["Debug", "Release","RelWithDebInfo"] } }
             ]
         }
     ],
@@ -49,16 +49,16 @@ INITIAL_SOURCE_TEMPLATE_DATA = {
             "architecture": { "value": "x64", "strategy": "set" },
             "toolset": { "value": "ClangCL", "strategy": "set" },
             "debug_flag": {
-                "CMAKE_CXX_FLAGS": "/EHsc /W3 /Zi /FS /MDd /D_ITERATOR_DEBUG_LEVEL=2 ",
-                "CMAKE_C_FLAGS": "/EHsc /W3 /Zi /FS /MDd /D_ITERATOR_DEBUG_LEVEL=2 "
+                "CMAKE_CXX_FLAGS": "/EHsc /W3 /Z7 /FS /MDd /D_ITERATOR_DEBUG_LEVEL=2 ",
+                "CMAKE_C_FLAGS": "/EHsc /W3 /Z7 /FS /MDd /D_ITERATOR_DEBUG_LEVEL=2 "
             },
             "rel_flag": {
                 "CMAKE_CXX_FLAGS": "/EHsc /W3  /O2 /FS /MD",
                 "CMAKE_C_FLAGS": "/EHsc /W3  /O2 /FS /MD"
             },
             "relwithdebug_flag": {
-                "CMAKE_CXX_FLAGS": "/EHsc /W3 /Zi /FS /MD /O2 /DNDEBUG",
-                "CMAKE_C_FLAGS": "/EHsc /W3 /Zi /FS /MD /O2 /DNDEBUG"
+                "CMAKE_CXX_FLAGS": "/EHsc /W3 /Z7 /FS /MD /O2 /DNDEBUG",
+                "CMAKE_C_FLAGS": "/EHsc /W3 /Z7 /FS /MD /O2 /DNDEBUG"
             },
             "toolchain": "C:\\Users\\sammi\\.vcpkg-clion\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake", "triplet": "x64-windows"
         },
@@ -194,6 +194,20 @@ class PresetGenerator:
     def add_configure_presets(self):
         global arch_value, arch_strategy, tool_strategy, tool_value
         self.presets["configurePresets"] = []
+        sccache_cache = {
+            "CMAKE_C_COMPILER_LAUNCHER": "sccache",
+            "CMAKE_CXX_COMPILER_LAUNCHER": "sccache"
+        }
+        sccache_env = {
+            "SCCACHE_IGNORE_SERVER_IO_ERROR": "1"
+        }
+        sccache = {
+            "name": "sccache-launcher",
+            "hidden": True,
+            "cacheVariables" : {k: v for k, v in sccache_cache.items() if v is not None and v != ""},
+            "environment" : {k: v for k, v in sccache_env.items() if v is not None and v != ""}
+        }
+        self.presets["configurePresets"].append(sccache)
         for platform_spec in self.template_data.get("platform", []):
             os_name_template = platform_spec.get("os")
             if not os_name_template: continue
@@ -267,7 +281,7 @@ class PresetGenerator:
                 display_build_type = build_type
                 flag_map = {
                     "debug": "debug_flag",
-                    "release": "release_flag",
+                    "release": "rel_flag",
                     "relwithdebinfo": "relwithdebug_flag"
                 }
                 flags_key = flag_map.get(build_type.lower(),"relwithdebug_flag")
@@ -278,9 +292,13 @@ class PresetGenerator:
                 if flags.get("CMAKE_C_FLAGS"): cfg_specific_cache_vars["CMAKE_C_FLAGS"] = flags.get("CMAKE_C_FLAGS")
                 cfg_specific_cache_vars[
                     "CMAKE_RUNTIME_OUTPUT_DIRECTORY"] = f"${{sourceDir}}/{DEFAULT_RUNTIME_OUTPUT_DIR_SUFFIX}"
+                if (build_type == "Debug" or build_type == "RelWithDebInfo") and (os_name_template == "Windows"):
+                    cfg_specific_cache_vars["CMAKE_MSVC_DEBUG_INFORMATION_FORMAT"] = "Embedded"
+                    cfg_specific_cache_vars["CMAKE_POLICY_DEFAULT_CMP0141"] = "NEW"
+                cfg_inherits = [base_preset_name, "sccache-launcher"]
                 cfg_preset = {
                     "name": concrete_config_preset_name, "displayName": f"{display_os_name} {display_build_type}",
-                    "inherits": base_preset_name,
+                    "inherits": cfg_inherits,
                     "condition": {"type": "equals", "lhs": "${hostSystemName}", "rhs": os_name_template},
                     "binaryDir": f"${{sourceDir}}/{DEFAULT_BINARY_DIR_SUFFIX}",
                     "cacheVariables": cfg_specific_cache_vars
@@ -312,9 +330,9 @@ class PresetGenerator:
             display_os_name = os_name_template
             if os_name_template == "Darwin": os_preset_name_part, display_os_name = "mac", "macOS"
 
-            for build_type_suffix in ["debug", "release"]:
-                configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix}"
-                display_build_type_name = build_type_suffix.capitalize()
+            for build_type_suffix in ["Debug", "Release","RelWithDebInfo"]:
+                configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix.lower()}"
+                display_build_type_name = build_type_suffix
                 # Main build preset
                 self.presets["buildPresets"].append({
                     "name": f"build-{configure_preset_ref}",
@@ -348,26 +366,26 @@ class PresetGenerator:
             display_os_name = os_name_template
             if os_name_template == "Darwin": os_preset_name_part, display_os_name = "mac", "macOS"
 
-            for build_type_suffix_for_tests in ["debug", "release"]:  # Iterate for both build types
+            for build_type_suffix_for_tests in ["Debug", "Release","RelWithDebInfo"]:  # Iterate for both build types
                 is_test_preset_needed_for_this_build_type = False
                 for step_spec in all_template_test_steps:
                     # Check if any test step applies to the current build_type_suffix_for_tests
-                    if build_type_suffix_for_tests in step_spec.get("args", {}).get("apply_to_build_types", ["debug"]):
+                    if build_type_suffix_for_tests in step_spec.get("args", {}).get("apply_to_build_types", ["Debug"]):
                         is_test_preset_needed_for_this_build_type = True;
                         break
                 if not is_test_preset_needed_for_this_build_type: continue
 
-                configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix_for_tests}"
-                base_test_preset_name_for_type = f"{os_preset_name_part}-{build_type_suffix_for_tests}-tests"
+                configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix_for_tests.lower()}"
+                base_test_preset_name_for_type = f"{os_preset_name_part}-{build_type_suffix_for_tests.lower()}-tests"
 
                 current_base_test_preset_obj = None
                 # Ensure base test preset for this type (debug/release) is added only once
                 if not any(tp["name"] == base_test_preset_name_for_type for tp in self.presets.get("testPresets", [])):
                     current_base_test_preset_obj = {
                         "name": base_test_preset_name_for_type,
-                        "displayName": f"运行测试 ({display_os_name} {build_type_suffix_for_tests.capitalize()})",
+                        "displayName": f"运行测试 ({display_os_name} {build_type_suffix_for_tests.lower()})",
                         "configurePreset": configure_preset_ref,
-                        "configuration": build_type_suffix_for_tests.capitalize(),
+                        "configuration": build_type_suffix_for_tests.lower(),
                         "output": {"outputOnFailure": True, "verbosity": "default"},
                         "execution": {"jobs": 1, "timeout": DEFAULT_TEST_TIMEOUT}
                     }
@@ -388,16 +406,16 @@ class PresetGenerator:
             display_os_name = os_name_template
             if os_name_template == "Darwin": os_preset_name_part, display_os_name = "mac", "macOS"
 
-            for build_type_suffix in ["debug", "release"]:  # Iterate for both build types
-                base_configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix}"
-                display_build_type_name = build_type_suffix.capitalize()
+            for build_type_suffix in ["Debug", "Release","RelWithDebInfo"]:  # Iterate for both build types
+                base_configure_preset_ref = f"{os_preset_name_part}-{build_type_suffix.lower()}"
+                display_build_type_name = build_type_suffix
                 main_build_preset_ref = f"build-{base_configure_preset_ref}"
 
                 for workflow_group in template_workflow_groups:
                     for template_wf_concept_name, template_steps_list in workflow_group.items():
                         if not isinstance(template_steps_list, list): continue
 
-                        workflow_preset_name = f"{os_preset_name_part}-{build_type_suffix}-workflow-{template_wf_concept_name.replace(' ', '-').lower()}"
+                        workflow_preset_name = f"{os_preset_name_part}-{build_type_suffix.lower()}-workflow-{template_wf_concept_name.replace(' ', '-').lower()}"
 
                         configure_step = {"type": "configure", "name": base_configure_preset_ref}
                         current_workflow_actual_steps = [configure_step]
@@ -454,7 +472,7 @@ class PresetGenerator:
                                 if not execute_this_step: continue
 
                                 step_args = step_spec.get("args", {})
-                                applicable_build_types = step_args.get("apply_to_build_types", ["debug"])
+                                applicable_build_types = step_args.get("apply_to_build_types", ["Debug"])
 
                                 if build_type_suffix in applicable_build_types:
                                     test_preset_base_name_for_current_type = f"{os_preset_name_part}-{build_type_suffix}-tests"
