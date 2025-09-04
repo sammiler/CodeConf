@@ -1,4 +1,5 @@
 import os
+import pathlib
 import sys
 import shutil
 # import copy # 不再需要深拷贝静态列表
@@ -41,18 +42,23 @@ class InteractiveFileCopier:
 
     def _get_project_root_from_env(self) -> Path | None:
         project_dir_env = os.environ.get("PROJECT_DIR")
+        root_path = None 
         if not project_dir_env:
             print_warning("环境变量 PROJECT_DIR 未设置。")
-            return None
-        try:
+        else:
             root_path = Path(project_dir_env).resolve()
+        
+        try:
+            current_script_path = pathlib.Path(__file__).resolve()
+            path_iterator = current_script_path
+            while path_iterator.parent != path_iterator:
+                if (path_iterator / ".vscode").is_dir():
+                    root_path = path_iterator
+                    break
+                path_iterator = path_iterator.parent
             if not root_path.exists():
                 print_error(f"PROJECT_DIR 指定的路径 '{root_path}' 不存在。")
                 return None
-            if not root_path.is_dir():
-                print_error(f"PROJECT_DIR 指定的路径 '{root_path}' 不是一个目录。")
-                return None
-            print_info(f"项目根目录 (Project Root): {root_path}")
             return root_path
         except Exception as e:
             print_error(f"解析 PROJECT_DIR 时出错: {e}")
@@ -183,11 +189,6 @@ class InteractiveFileCopier:
             print_info("没有从模板目录扫描到任何文件进行复制。")
             return
 
-        confirm = input(f"{YELLOW}您确定要将配置的 {len(self.files_to_copy_config)} 个文件从 '{self.template_dir}' 复制到 '{self.project_root_dir}' (根据指定的目标子目录) 吗? (y/N): {RESET}").strip().lower()
-        if confirm != 'y':
-            print_info("复制操作已取消。")
-            return
-
         files_copied_count = 0
         files_failed_count = 0
 
@@ -232,50 +233,8 @@ class InteractiveFileCopier:
         print_info(f"\n复制操作完成。成功复制 {files_copied_count} 个文件，失败 {files_failed_count} 个。")
 
     def main_loop(self):
-        while self.is_running:
-            print_menu_header("文件复制工具 主菜单")
-            if self.project_root_dir:
-                print_config_item("项目根目录 (PROJECT_DIR)", str(self.project_root_dir))
-            else:
-                print_warning("PROJECT_DIR 未设置或无效。复制功能将无法执行。")
-            print_config_item("模板目录 (Template Dir)", str(self.template_dir))
-            print_config_item("已扫描/配置的文件数", f"{len(self.files_to_copy_config)} 个")
-            print("------------------------------------")
-            print_option("1", "查看/管理文件目标")
-            print_option("2", "执行复制操作")
-            print_option("0", "退出")
-            print("------------------------------------")
-
-            choice = input(f"{BLUE}请输入您的选择 > {RESET}").strip()
-
-            try:
-                if choice == '1':
-                    self.manage_file_targets()
-                elif choice == '2':
-                    if not self.project_root_dir:
-                        print_error("无法执行复制：PROJECT_DIR 未设置或无效。")
-                    elif not self.template_dir.is_dir():
-                        print_error(f"无法执行复制：模板目录 '{self.template_dir}' 不存在。")
-                    else:
-                        self.execute_copy_operation()
-                elif choice == '0':
-                    self.is_running = False
-                    print_info("感谢使用，程序已退出。")
-                else:
-                    print_error("无效的选择，请重新输入。")
-            except KeyboardInterrupt:
-                print_warning("\n操作被用户中断。返回主菜单。")
-            except Exception as e:
-                print_error(f"发生意外错误: {e}")
-                # import traceback # 用于调试
-                # print_error(f"详细信息: {traceback.format_exc()}")
-                print_info("已返回主菜单。")
-
+        self.execute_copy_operation()
 def main():
-    if "PROJECT_DIR" not in os.environ:
-        print_warning("警告: 环境变量 PROJECT_DIR 未设置。")
-        print_info("请设置 PROJECT_DIR 指向您的项目根目录以便脚本正常复制文件。")
-
     app = InteractiveFileCopier()
     app.main_loop()
 
