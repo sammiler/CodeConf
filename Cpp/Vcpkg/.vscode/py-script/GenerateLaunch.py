@@ -229,148 +229,6 @@ class InteractiveLaunchConfigGenerator:
                 except json.JSONDecodeError:
                     print_error("无效的JSON格式，未更新。")
 
-    def manage_launch_configs_interactive(self):
-        page_size = 10
-        current_page = 0
-
-        while True:
-            print_menu_header("管理生成的启动配置")
-            if not self.generated_launch_configs:
-                print_info("没有扫描到或生成的启动配置。请先扫描可执行文件目录。")
-                print_option("s", "设置可执行文件目录并扫描")
-                print_option("b", "返回主菜单")
-                choice = input(f"{BLUE}选择 > {RESET}").strip().lower()
-                if choice == 's': self.set_executables_directory_and_scan()
-                elif choice == 'b': return
-                else: print_error("无效选项")
-                continue
-
-            start_index = current_page * page_size
-            end_index = start_index + page_size
-            page_items = self.generated_launch_configs[start_index:end_index]
-
-            print_info(f"显示第 {current_page + 1} 页 (共 { (len(self.generated_launch_configs) - 1) // page_size + 1} 页)")
-            for i, config_block in enumerate(page_items):
-                actual_index = start_index + i
-                program_path = config_block.get('program', 'N/A')
-                program_display = f"...{program_path[-50:]}" if len(program_path) > 50 else program_path
-                print_option(str(i + 1), f"{config_block.get('name', '未命名配置')} (程序: {program_display})")
-            
-            print("---")
-            if current_page > 0: print_option("p", "上一页")
-            if end_index < len(self.generated_launch_configs): print_option("n", "下一页")
-            print_option("s", "重新扫描 (当前目录: '" + self.executables_dir_rel + "')")
-            if page_items:
-                print_option("d", "删除一个配置 (从当前页选择)")
-                print_option("e", "编辑一个配置 (从当前页选择)")
-            print_option("b", "完成管理并返回主菜单")
-
-            choice = input(f"{BLUE}选择操作或配置编号 > {RESET}").strip().lower()
-
-            if choice == 'b': break
-            elif choice == 'p' and current_page > 0: current_page -= 1
-            elif choice == 'n' and end_index < len(self.generated_launch_configs): current_page += 1
-            elif choice == 's': self.set_executables_directory_and_scan(); current_page = 0
-            elif choice == 'd' and page_items:
-                try:
-                    num_on_page_str = input(f"{BLUE}输入当前页上要删除配置的编号: {RESET}").strip()
-                    num_on_page = int(num_on_page_str) -1
-                    if 0 <= num_on_page < len(page_items):
-                        actual_idx_to_delete = start_index + num_on_page
-                        deleted_name = self.generated_launch_configs[actual_idx_to_delete].get('name')
-                        confirm = input(f"{YELLOW}确定删除 '{deleted_name}'? (y/N): {RESET}").strip().lower()
-                        if confirm == 'y':
-                            self.generated_launch_configs.pop(actual_idx_to_delete)
-                            print_success(f"配置 '{deleted_name}' 已从内存中删除。")
-                            if start_index >= len(self.generated_launch_configs) and current_page > 0: current_page -=1
-                        else: print_info("删除已取消。")
-                    else: print_error("页内编号无效。")
-                except ValueError: print_error("请输入数字。")
-            elif (choice == 'e' or choice.isdigit()) and page_items:
-                idx_to_process_str = choice if choice.isdigit() else input(f"{BLUE}输入当前页上要编辑配置的编号: {RESET}").strip()
-                try:
-                    num_on_page = int(idx_to_process_str) - 1
-                    if 0 <= num_on_page < len(page_items):
-                        actual_idx_to_edit = start_index + num_on_page
-                        self._edit_single_launch_config_block(actual_idx_to_edit)
-                    else: print_error("页内编号无效。")
-                except ValueError: print_error("请输入有效的数字编号。" if choice == 'e' else "无效输入。")
-            else:
-                print_error("无效输入。")
-
-    def _edit_single_launch_config_block(self, block_index_in_memory: int):
-        if not (0 <= block_index_in_memory < len(self.generated_launch_configs)):
-            print_error("无效的配置块索引。")
-            return
-        
-        block_to_edit = self.generated_launch_configs[block_index_in_memory]
-        block_name_display = block_to_edit.get("name", f"配置 {block_index_in_memory+1}")
-        
-        while True:
-            print_menu_header(f"编辑启动配置: '{block_name_display}'")
-            editable_fields_for_menu = list(EDITABLE_LAUNCH_KEYS.items())
-
-            for i, (key, desc) in enumerate(editable_fields_for_menu):
-                current_val = block_to_edit.get(key)
-                preview_str = ""
-                if isinstance(current_val, list): preview_str = f"列表 (共 {len(current_val)} 项)"
-                elif isinstance(current_val, dict): preview_str = f"对象 (共 {len(current_val)} 键)"
-                elif current_val is None: preview_str = f"{YELLOW}未设置{RESET}"
-                else: preview_str = str(current_val)
-                print_option(str(i + 1), f"{desc} (当前: {preview_str})")
-            
-            print_option("0", f"完成编辑 '{block_name_display}'")
-            
-            choice_str = input(f"{BLUE}请选择要编辑的属性编号 > {RESET}").strip()
-            if choice_str == '0': break
-
-            try:
-                selected_attr_idx = int(choice_str) - 1
-                if not (0 <= selected_attr_idx < len(editable_fields_for_menu)):
-                    print_error("无效的属性编号。"); continue
-
-                key_to_edit, desc_of_key = editable_fields_for_menu[selected_attr_idx]
-                
-                print_info(f"\n--- 正在编辑 '{block_name_display}' 的 '{desc_of_key}' ---")
-
-                if key_to_edit == "environment":
-                    if key_to_edit not in block_to_edit or not isinstance(block_to_edit[key_to_edit], list):
-                        block_to_edit[key_to_edit] = []
-                    self._edit_list_or_obj_property(block_to_edit[key_to_edit], desc_of_key, is_env_list=True)
-                elif key_to_edit in ["logging", "sourceFileMap", "setupCommands"]: 
-                    if key_to_edit not in block_to_edit or not isinstance(block_to_edit[key_to_edit], (dict, list)):
-                         block_to_edit[key_to_edit] = OrderedDict() if key_to_edit != "setupCommands" else []
-                    self._edit_list_or_obj_property(block_to_edit[key_to_edit], desc_of_key)
-                elif key_to_edit == "stopAtEntry":
-                    current_value = block_to_edit.get(key_to_edit, True)
-                    current_bool_val_str = str(current_value).lower()
-                    new_val_str = input(f"{BLUE}输入新值 ('true'/'false') [当前: {current_bool_val_str}, 回车保留]: {RESET}").strip().lower()
-                    if new_val_str == "true": block_to_edit[key_to_edit] = True; print_success("已更新。")
-                    elif new_val_str == "false": block_to_edit[key_to_edit] = False; print_success("已更新。")
-                    elif new_val_str == "" : pass
-                    else: print_warning("无效输入或未更改。")
-                else: 
-                    current_value = block_to_edit.get(key_to_edit, "")
-                    current_str_val = str(current_value)
-                    new_val = input(f"{BLUE}输入新值 [当前: '{current_str_val}', 回车保留]: {RESET}").strip()
-                    if new_val or (new_val == "" and current_value is not None): 
-                        if new_val != current_str_val:
-                            block_to_edit[key_to_edit] = new_val
-                            print_success("已更新。")
-                input(f"{BLUE}按回车键继续...{RESET}")
-            except ValueError: print_error("请输入有效的数字编号。")
-
-    def set_executables_directory_and_scan(self):
-        print_menu_header("设置可执行文件目录")
-        current_dir = self.executables_dir_rel
-        new_dir_rel = input(f"{BLUE}请输入可执行文件目录 (相对于项目根 '{self.project_dir}', 当前: '{current_dir}', 回车保留): {RESET}").strip()
-        
-        if new_dir_rel:
-            self.executables_dir_rel = pathlib.Path(new_dir_rel.strip('/\\')).as_posix()
-            print_success(f"可执行文件目录已更新为: '{self.executables_dir_rel}'")
-        
-        self.scan_executables()
-        input(f"{BLUE}按回车键继续...{RESET}")
 
     # ⬇️⬇️⬇️ 2. 修改这个核心方法 ⬇️⬇️⬇️
     def generate_and_save_launch_file(self):
@@ -379,14 +237,7 @@ class InteractiveLaunchConfigGenerator:
         # 检查内存中的 C++ 启动配置
         if not self.generated_launch_configs:
             print_warning("内存中没有已生成的 C++ 启动配置。是否要先扫描可执行文件目录？")
-            choice = input(f"{BLUE}扫描可执行文件目录 (当前: '{self.executables_dir_rel}')? (Y/n): {RESET}").strip().lower()
-            if choice != 'n':
-                self.scan_executables()
-                if not self.generated_launch_configs:
-                    print_info("扫描后仍无 C++ 配置，但仍将继续处理 Python Attach 配置。")
-            else:
-                print_info("已取消扫描。")
-        
+            self.scan_executables()
         # 加载现有的 launch.json 文件内容
         file_data = self._load_existing_file_or_default_for_launch()
         existing_configurations_in_file = file_data.get("configurations", [])
@@ -439,8 +290,6 @@ class InteractiveLaunchConfigGenerator:
         ])
 
         self._save_to_file(file_data_to_save, "launch.json")
-        input(f"\n{BLUE}按回车键返回主菜单...{RESET}")
-    # ⬆️⬆️⬆️ 2. 修改完毕 ⬆️⬆️⬆️
 
     def _load_existing_file_or_default_for_launch(self) -> OrderedDict:
         if not self.launch_file_path.exists():
@@ -462,46 +311,22 @@ class InteractiveLaunchConfigGenerator:
     def main_loop(self):
         if not self.generated_launch_configs :
             self.scan_executables()
-
-        while self.is_running:
-            print_menu_header("VSCode launch.json 生成器")
-            print_config_item("项目目录", str(self.project_dir))
-            print_config_item("可执行文件扫描目录 (相对项目根)", self.executables_dir_rel)
-            print_config_item("内存中已配置的启动项数", str(len(self.generated_launch_configs)))
-            print("------------------------------------")
-            print_option("1", "设置可执行文件目录并扫描")
-            print_option("2", "查看/管理扫描到的启动配置 (分页)")
-            print_option("3", "生成/更新 launch.json 文件")
-            print_option("0", "退出")
-            print("------------------------------------")
-
-            choice = input(f"{BLUE}请输入您的选择 > {RESET}").strip()
-
-            try:
-                if choice == '1':
-                    self.set_executables_directory_and_scan()
-                elif choice == '2':
-                    self.manage_launch_configs_interactive()
-                elif choice == '3':
-                    self.generate_and_save_launch_file()
-                elif choice == '0':
-                    print_info("感谢使用，程序已退出。")
-                    self.is_running = False
-                else:
-                    print_error("无效的选择，请重新输入。")
-            except KeyboardInterrupt:
-                print_warning("\n操作被用户中断。返回主菜单。")
-            except Exception as e:
-                print_error(f"发生意外错误: {e}")
-                print_info("已返回主菜单。")
+        self.generate_and_save_launch_file()
 
 def main_interactive():
     project_dir_env = os.environ.get("PROJECT_DIR")
+    project_dir = None
     if not project_dir_env:
-        print_error("未设置 PROJECT_DIR 环境变量。请设置该变量指向项目根目录。")
-        sys.exit(1)
-    
-    project_dir = pathlib.Path(project_dir_env).resolve()
+        print_error("未设置 PROJECT_DIR 环境变量。将设置默认项目根目录。")
+        current_script_path = pathlib.Path(__file__).resolve()
+        path_iterator = current_script_path
+        while path_iterator.parent != path_iterator:
+            if (path_iterator / ".vscode").is_dir():
+                project_dir = path_iterator
+                break
+            path_iterator = path_iterator.parent        
+    else:
+        project_dir = pathlib.Path(project_dir_env).resolve()
     if not project_dir.is_dir():
         print_error(f"PROJECT_DIR '{project_dir_env}' 不是一个有效的目录。")
         sys.exit(1)
