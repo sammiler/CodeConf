@@ -49,6 +49,9 @@ DEFAULT_SETTINGS_JSON = OrderedDict([
         "--completion-style=detailed",
         "--header-insertion=never"
     ]),
+    ("editor.fontFamily", "Maple Mono NF, Jetbrains Mono, Menlo, Consolas, monospace"),
+    ("editor.fontLigatures", "'calt', 'cv01', 'ss01', 'zero'"),
+    ("editor.fontSize", 13),
     ("syncfiles.view.scriptClickAction", "executeDefault"),
     ("terminal.integrated.defaultProfile.windows", "Git Bash"), #特定于Windows
     ("C_Cpp.default.compileCommands", "${workspaceFolder}/build/compile_commands.json")
