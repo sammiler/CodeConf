@@ -49,6 +49,7 @@ DEFAULT_SETTINGS_JSON = OrderedDict([
         "--completion-style=detailed",
         "--header-insertion=never"
     ]),
+    ("qt-qml.qmlls.additionalImportPaths", ["C:/Qt/6.10.0/msvc2022_64/qml"]), 
     ("editor.fontFamily", "Maple Mono NF, Jetbrains Mono, Menlo, Consolas, monospace"),
     ("editor.fontLigatures", "'calt', 'cv01', 'ss01', 'zero'"),
     ("editor.fontSize", 13),
